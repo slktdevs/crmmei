@@ -3,3 +3,4 @@ Aplicativo nativo iOS (SwiftUI) para autônomos e pequenos prestadores de servi�
 
 ## Deploy & TestFlight
 Compilação e entrega contínua automatizada via GitHub Actions para o Apple TestFlight.
+Status: Pipeline Ativa
