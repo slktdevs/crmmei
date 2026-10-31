@@ -20,13 +20,11 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Generate Xcode Project and Adjust PBX Format
+      - name: Generate Xcode Project
         run: |
           cd "$GITHUB_WORKSPACE/ios-app"
           xcodegen generate --spec project.yml
-          # Ajusta compatibilidade do project.pbxproj para Xcode 15.4 (objectVersion 56)
           sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' "$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj/project.pbxproj"
-          head -n 10 "$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj/project.pbxproj"
 
       - name: Install Apple Certificate & Provisioning Profile
         env:
@@ -62,6 +60,7 @@ jobs:
             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="Y6V67KQ9X2" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE="a976aaf6-0409-4431-b726-404059884747"
 
           xcodebuild -exportArchive \
