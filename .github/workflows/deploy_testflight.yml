@@ -46,7 +46,7 @@ jobs:
           security list-keychain -d user -s "$KEYCHAIN_PATH"
 
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/be94d45f-34d6-4e0d-a243-093c7b4c0e5f.mobileprovision
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/bd922fb8-2b18-4e43-a570-55f7e0556ef4.mobileprovision
 
       - name: Build Archive
         run: |
@@ -58,12 +58,12 @@ jobs:
             -configuration "Release" \
             -destination "generic/platform=iOS" \
             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
-            MARKETING_VERSION="3.0.0" \
-            CURRENT_PROJECT_VERSION="2" \
+            MARKETING_VERSION="1.0" \
+            CURRENT_PROJECT_VERSION="1" \
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="Y6V67KQ9X2" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE="be94d45f-34d6-4e0d-a243-093c7b4c0e5f"
+            PROVISIONING_PROFILE="bd922fb8-2b18-4e43-a570-55f7e0556ef4"
 
       - name: Package & Patch IPA
         run: |
@@ -73,9 +73,9 @@ jobs:
           APP_DIR="$RUNNER_TEMP/export/Payload/CRMMEI.app"
           APP_PLIST="$APP_DIR/Info.plist"
 
-          plutil -replace CFBundleIdentifier -string "br.com.unikprotege" "$APP_PLIST"
-          plutil -replace CFBundleShortVersionString -string "3.0.0" "$APP_PLIST"
-          plutil -replace CFBundleVersion -string "2" "$APP_PLIST"
+          plutil -replace CFBundleIdentifier -string "br.com.unikprotege.notificacaopush" "$APP_PLIST"
+          plutil -replace CFBundleShortVersionString -string "1.0" "$APP_PLIST"
+          plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
           plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
           plutil -replace NSSpeechRecognitionUsageDescription -string "O aplicativo CRM MEI usa o reconhecimento de voz da Apple para transformar sua fala em dados dos orçamentos automaticamente." "$APP_PLIST"
           plutil -replace NSMicrophoneUsageDescription -string "O aplicativo CRM MEI usa o microfone para que você possa ditar clientes e valores por comando de voz." "$APP_PLIST"
@@ -89,7 +89,7 @@ jobs:
           plutil -replace DTPlatformBuild -string "26A100" "$APP_PLIST"
           plutil -replace BuildMachineOSBuild -string "26A100" "$APP_PLIST"
 
-          # Mach-O patch
+          # Mach-O load command patch
           BIN="$APP_DIR/CRMMEI"
           vtool -set-build-version ios 16.0 26.0 -replace -output "$BIN" "$BIN" || true
 
