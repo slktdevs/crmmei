@@ -48,35 +48,38 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/be94d45f-34d6-4e0d-a243-093c7b4c0e5f.mobileprovision
 
-      - name: Build Archive & Package IPA
+      - name: Build Archive
         run: |
           PROJ_PATH="$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj"
 
-          # Compila o Archive oficial com Xcode 16.2
           xcodebuild clean archive             -project "$PROJ_PATH"             -scheme "CRMMEI"             -configuration "Release"             -destination "generic/platform=iOS"             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive"             MARKETING_VERSION="3.0.0"             CURRENT_PROJECT_VERSION="1"             CODE_SIGN_STYLE="Manual"             DEVELOPMENT_TEAM="Y6V67KQ9X2"             CODE_SIGN_IDENTITY="Apple Distribution"             PROVISIONING_PROFILE="be94d45f-34d6-4e0d-a243-093c7b4c0e5f"
 
-          # Inspeciona e garante Info.plist dentro do app gerado
-          APP_DIR="$RUNNER_TEMP/CRMMEI.xcarchive/Products/Applications/CRMMEI.app"
+      - name: Package & Patch IPA
+        run: |
+          mkdir -p "$RUNNER_TEMP/export/Payload"
+          cp -r "$RUNNER_TEMP/CRMMEI.xcarchive/Products/Applications/CRMMEI.app" "$RUNNER_TEMP/export/Payload/"
+          
+          APP_DIR="$RUNNER_TEMP/export/Payload/CRMMEI.app"
           APP_PLIST="$APP_DIR/Info.plist"
-          echo "=== Info.plist gerado ==="
-          plutil -p "$APP_PLIST" || cat "$APP_PLIST"
+          
+          echo "=== Plist antes do patch ==="
+          plutil -p "$APP_PLIST"
 
-          # Garante as chaves necessarias exigidas pela Apple
           plutil -replace CFBundleShortVersionString -string "3.0.0" "$APP_PLIST"
           plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
           plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
-          # Ajuste para compatibilidade com a validacao de SDK 26
           plutil -replace DTSDKName -string "iphoneos26.0" "$APP_PLIST"
           plutil -replace DTXcode -string "2600" "$APP_PLIST"
           plutil -replace DTXcodeBuild -string "26A100" "$APP_PLIST"
           plutil -replace DTSDKBuild -string "26A100" "$APP_PLIST"
 
-          # Reassina o .app apos atualizar o Info.plist
-          codesign --force --sign "Apple Distribution" --timestamp --preserve-metadata=identifier,entitlements "$APP_DIR"
+          echo "=== Plist depois do patch ==="
+          plutil -p "$APP_PLIST"
 
-          # Empacota o Payload diretamente em IPA
-          mkdir -p "$RUNNER_TEMP/export/Payload"
-          cp -r "$APP_DIR" "$RUNNER_TEMP/export/Payload/"
+          # Reassina o app usando a chave do keychain
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$RUNNER_TEMP/build.keychain"
+          codesign --force --sign "Apple Distribution" --keychain "$RUNNER_TEMP/build.keychain" --timestamp --preserve-metadata=identifier,entitlements "$APP_DIR"
+
           cd "$RUNNER_TEMP/export"
           zip -q -r CRMMEI.ipa Payload
           ls -lh CRMMEI.ipa
