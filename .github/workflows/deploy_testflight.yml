@@ -14,16 +14,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode 16 Version
-        run: sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode.app
+      - name: Select Xcode 15.4
+        run: sudo xcode-select -switch /Applications/Xcode_15.4.app
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Generate Xcode Project
+      - name: Generate Xcode Project and Adjust PBX Format
         run: |
           cd "$GITHUB_WORKSPACE/ios-app"
           xcodegen generate --spec project.yml
+          # Ajusta compatibilidade do project.pbxproj para Xcode 15.4 (objectVersion 56)
+          sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' "$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj/project.pbxproj"
+          head -n 10 "$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj/project.pbxproj"
 
       - name: Install Apple Certificate & Provisioning Profile
         env:
