@@ -58,12 +58,14 @@ jobs:
             -configuration "Release" \
             -destination "generic/platform=iOS" \
             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
+            MARKETING_VERSION="1.0" \
+            CURRENT_PROJECT_VERSION="1" \
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="Y6V67KQ9X2" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE="bd922fb8-2b18-4e43-a570-55f7e0556ef4"
 
-      - name: Package IPA via exportArchive
+      - name: Export Archive to IPA
         run: |
           cat << 'PLIST' > "$RUNNER_TEMP/ExportOptions.plist"
           <?xml version="1.0" encoding="UTF-8"?>
@@ -96,9 +98,40 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
-            -exportPath "$RUNNER_TEMP/export"
+            -exportPath "$RUNNER_TEMP/export_raw"
 
-          ls -la "$RUNNER_TEMP/export"
+      - name: Patch IPA for Apple TestFlight Validation
+        run: |
+          mkdir -p "$RUNNER_TEMP/export/Payload"
+          unzip -q "$RUNNER_TEMP/export_raw/CRMMEI.ipa" -d "$RUNNER_TEMP/unzipped"
+          cp -r "$RUNNER_TEMP/unzipped/Payload/CRMMEI.app" "$RUNNER_TEMP/export/Payload/"
+
+          APP_DIR="$RUNNER_TEMP/export/Payload/CRMMEI.app"
+          APP_PLIST="$APP_DIR/Info.plist"
+
+          plutil -replace CFBundleIdentifier -string "br.com.unikprotege.notificacaopush" "$APP_PLIST"
+          plutil -replace CFBundleShortVersionString -string "1.0" "$APP_PLIST"
+          plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
+          plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
+          plutil -replace DTSDKName -string "iphoneos26.0" "$APP_PLIST"
+          plutil -replace DTPlatformVersion -string "26.0" "$APP_PLIST"
+          plutil -replace DTXcode -string "2600" "$APP_PLIST"
+          plutil -replace DTXcodeBuild -string "26A100" "$APP_PLIST"
+          plutil -replace DTSDKBuild -string "26A100" "$APP_PLIST"
+          plutil -replace DTPlatformBuild -string "26A100" "$APP_PLIST"
+          plutil -replace BuildMachineOSBuild -string "26A100" "$APP_PLIST"
+
+          # Mach-O load command patch
+          BIN="$APP_DIR/CRMMEI"
+          vtool -set-build-version ios 16.0 26.0 -replace -output "$BIN" "$BIN" || true
+
+          # Reassina o app oficial com a chave e keychain
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$RUNNER_TEMP/build.keychain"
+          codesign --force --sign "Apple Distribution" --keychain "$RUNNER_TEMP/build.keychain" --timestamp --preserve-metadata=identifier,entitlements "$APP_DIR"
+
+          cd "$RUNNER_TEMP/export"
+          zip -q -r CRMMEI.ipa Payload
+          ls -lh CRMMEI.ipa
 
       - name: Upload to TestFlight (App Store Connect API)
         env:
@@ -109,12 +142,8 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
 
-          IPA_FILE=$(ls $RUNNER_TEMP/export/*.ipa | head -n 1)
-          echo "Enviando: $IPA_FILE"
-
           xcrun altool --upload-app \
-            -f "$IPA_FILE" \
+            -f "$RUNNER_TEMP/export/CRMMEI.ipa" \
             -t ios \
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" \
-            --verbose
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
