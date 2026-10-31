@@ -3,6 +3,7 @@ options:
   bundleIdPrefix: br.com.unikprotege
   deploymentTarget:
     iOS: "16.0"
+  xcodeVersion: "15.0"
 settings:
   SWIFT_VERSION: "5.0"
   CURRENT_PROJECT_VERSION: 1
