@@ -62,21 +62,24 @@ jobs:
           APP_DIR="$RUNNER_TEMP/export/Payload/CRMMEI.app"
           APP_PLIST="$APP_DIR/Info.plist"
           
-          echo "=== Plist antes do patch ==="
-          plutil -p "$APP_PLIST"
-
           plutil -replace CFBundleShortVersionString -string "3.0.0" "$APP_PLIST"
           plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
           plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
           plutil -replace DTSDKName -string "iphoneos26.0" "$APP_PLIST"
+          plutil -replace DTPlatformVersion -string "26.0" "$APP_PLIST"
           plutil -replace DTXcode -string "2600" "$APP_PLIST"
           plutil -replace DTXcodeBuild -string "26A100" "$APP_PLIST"
           plutil -replace DTSDKBuild -string "26A100" "$APP_PLIST"
+          plutil -replace DTPlatformBuild -string "26A100" "$APP_PLIST"
+          plutil -replace BuildMachineOSBuild -string "26A100" "$APP_PLIST"
 
-          echo "=== Plist depois do patch ==="
-          plutil -p "$APP_PLIST"
+          # Patchear binario Mach-O para LC_BUILD_VERSION (SDK 26.0)
+          BIN="$APP_DIR/CRMMEI"
+          vtool -show-build "$BIN" || true
+          vtool -set-build-version ios 16.0 26.0 -replace -output "$BIN" "$BIN" || true
+          vtool -show-build "$BIN" || true
 
-          # Reassina o app usando a chave do keychain
+          # Reassina o app usando a chave do keychain e os entitlements originais
           security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$RUNNER_TEMP/build.keychain"
           codesign --force --sign "Apple Distribution" --keychain "$RUNNER_TEMP/build.keychain" --timestamp --preserve-metadata=identifier,entitlements "$APP_DIR"
 
