@@ -1,6 +1,6 @@
-name: ParceiroAutonomo
+name: CRMMEI
 options:
-  bundleIdPrefix: com.parceiroautonomo
+  bundleIdPrefix: br.com.unikprotege
   deploymentTarget:
     iOS: "16.0"
 settings:
@@ -8,7 +8,7 @@ settings:
   CURRENT_PROJECT_VERSION: 1
   MARKETING_VERSION: "1.0.0"
 targets:
-  ParceiroAutonomo:
+  CRMMEI:
     type: application
     platform: iOS
     deploymentTarget: "16.0"
@@ -17,5 +17,6 @@ targets:
     info:
       path: ParceiroAutonomo/Info.plist
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.parceiroautonomo.app
+      PRODUCT_BUNDLE_IDENTIFIER: br.com.unikprotege
+      DEVELOPMENT_TEAM: Y6V67KQ9X2
       ENABLE_PREVIEWS: YES
