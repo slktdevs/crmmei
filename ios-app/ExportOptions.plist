@@ -4,13 +4,22 @@
 <dict>
     <key>method</key>
     <string>app-store</string>
+    <key>teamID</key>
+    <string>Y6V67KQ9X2</string>
     <key>uploadBitcode</key>
+    <false/>
+    <key>compileBitcode</key>
     <false/>
     <key>uploadSymbols</key>
     <true/>
-    <key>destination</key>
-    <string>upload</string>
     <key>signingStyle</key>
     <string>manual</string>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>br.com.unikprotege</key>
+        <string>MeiCRM</string>
+    </dict>
 </dict>
 </plist>
