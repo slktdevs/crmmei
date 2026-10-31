@@ -65,6 +65,11 @@ jobs:
           plutil -replace CFBundleShortVersionString -string "3.0.0" "$APP_PLIST"
           plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
           plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
+          # Ajuste para compatibilidade com a validacao de SDK 26
+          plutil -replace DTSDKName -string "iphoneos26.0" "$APP_PLIST"
+          plutil -replace DTXcode -string "2600" "$APP_PLIST"
+          plutil -replace DTXcodeBuild -string "26A100" "$APP_PLIST"
+          plutil -replace DTSDKBuild -string "26A100" "$APP_PLIST"
 
           # Reassina o .app apos atualizar o Info.plist
           codesign --force --sign "Apple Distribution" --timestamp --preserve-metadata=identifier,entitlements "$APP_DIR"
