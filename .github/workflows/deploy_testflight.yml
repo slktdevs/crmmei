@@ -14,8 +14,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode Version
-        run: sudo xcode-select -switch /Applications/Xcode_15.4.app
+      - name: Select Xcode 16 Version
+        run: sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode.app
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -24,8 +24,6 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE/ios-app"
           xcodegen generate --spec project.yml
-          echo "Verificando se o projeto existe:"
-          ls -la "$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj"
 
       - name: Install Apple Certificate & Provisioning Profile
         env:
