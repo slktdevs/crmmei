@@ -264,7 +264,8 @@ struct SpeakerButton: View {
             HStack(spacing: 10) {
                 Image(systemName: voiceManager.estaFalando ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
                     .font(.system(size: 24, weight: .black, design: .rounded))
-                    .symbolEffect(.variableColor.iterative, isActive: voiceManager.estaFalando)
+                    // compatibilidade iOS 16
+                    .scaleEffect(voiceManager.estaFalando ? 1.08 : 1.0)
                 
                 Text(voiceManager.estaFalando ? "Parar Áudio" : rotuloCurto)
                     .font(.system(size: 20, weight: .heavy, design: .rounded))
@@ -328,7 +329,7 @@ struct PulsingMicButton: View {
                 cornerRadius: 18
             )
         )
-        .onChange(of: ativoNesteCampo) { _, novoValor in
+        .onChange(of: ativoNesteCampo) { novoValor in
             pulso = novoValor
         }
     }
