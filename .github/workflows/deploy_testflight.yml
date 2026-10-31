@@ -45,7 +45,7 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/a976aaf6-0409-4431-b726-404059884747.mobileprovision
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/be94d45f-34d6-4e0d-a243-093c7b4c0e5f.mobileprovision
 
       - name: Build Archive & Export IPA
         run: |
@@ -61,7 +61,7 @@ jobs:
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="Y6V67KQ9X2" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE="a976aaf6-0409-4431-b726-404059884747"
+            PROVISIONING_PROFILE="be94d45f-34d6-4e0d-a243-093c7b4c0e5f"
 
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
