@@ -19,7 +19,7 @@ jobs:
 
       - name: Generate Xcode Project
         run: |
-          cd ios-app
+          cd "$GITHUB_WORKSPACE/ios-app"
           xcodegen generate
 
       - name: Install Apple Certificate & Provisioning Profile
@@ -46,10 +46,20 @@ jobs:
 
       - name: Build Archive & IPA
         run: |
-          cd ios-app
-          xcodebuild -scheme CRMMEI             -project CRMMEI.xcodeproj             -archivePath $RUNNER_TEMP/CRMMEI.xcarchive             archive             -allowProvisioningUpdates
+          cd "$GITHUB_WORKSPACE/ios-app"
+          xcodebuild -scheme CRMMEI \
+            -project CRMMEI.xcodeproj \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=Y6V67KQ9X2 \
+            PROVISIONING_PROFILE_SPECIFIER="CRMMEI"
 
-          xcodebuild -exportArchive             -archivePath $RUNNER_TEMP/CRMMEI.xcarchive             -exportPath $RUNNER_TEMP/export             -exportOptionsPlist ExportOptions.plist
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist ExportOptions.plist
 
       - name: Upload to TestFlight (App Store Connect API)
         env:
@@ -60,4 +70,8 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
 
-          xcrun altool --upload-app             -f $RUNNER_TEMP/export/CRMMEI.ipa             -t ios             --apiKey "$APP_STORE_CONNECT_KEY_ID"             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+          xcrun altool --upload-app \
+            -f "$RUNNER_TEMP/export/CRMMEI.ipa" \
+            -t ios \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
