@@ -52,41 +52,53 @@ jobs:
         run: |
           PROJ_PATH="$GITHUB_WORKSPACE/ios-app/CRMMEI.xcodeproj"
 
-          xcodebuild clean archive             -project "$PROJ_PATH"             -scheme "CRMMEI"             -configuration "Release"             -destination "generic/platform=iOS"             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive"             MARKETING_VERSION="1.0"             CURRENT_PROJECT_VERSION="1"             CODE_SIGN_STYLE="Manual"             DEVELOPMENT_TEAM="Y6V67KQ9X2"             CODE_SIGN_IDENTITY="Apple Distribution"             PROVISIONING_PROFILE="bd922fb8-2b18-4e43-a570-55f7e0556ef4"
+          xcodebuild clean archive \
+            -project "$PROJ_PATH" \
+            -scheme "CRMMEI" \
+            -configuration "Release" \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
+            CODE_SIGN_STYLE="Manual" \
+            DEVELOPMENT_TEAM="Y6V67KQ9X2" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE="bd922fb8-2b18-4e43-a570-55f7e0556ef4"
 
-      - name: Package & Patch IPA
+      - name: Package IPA via exportArchive
         run: |
-          mkdir -p "$RUNNER_TEMP/export/Payload"
-          cp -r "$RUNNER_TEMP/CRMMEI.xcarchive/Products/Applications/CRMMEI.app" "$RUNNER_TEMP/export/Payload/"
-          
-          APP_DIR="$RUNNER_TEMP/export/Payload/CRMMEI.app"
-          APP_PLIST="$APP_DIR/Info.plist"
-          
-          plutil -replace CFBundleIdentifier -string "br.com.unikprotege.notificacaopush" "$APP_PLIST"
-          plutil -replace CFBundleShortVersionString -string "1.0" "$APP_PLIST"
-          plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
-          plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
-          plutil -replace DTSDKName -string "iphoneos26.0" "$APP_PLIST"
-          plutil -replace DTPlatformVersion -string "26.0" "$APP_PLIST"
-          plutil -replace DTXcode -string "2600" "$APP_PLIST"
-          plutil -replace DTXcodeBuild -string "26A100" "$APP_PLIST"
-          plutil -replace DTSDKBuild -string "26A100" "$APP_PLIST"
-          plutil -replace DTPlatformBuild -string "26A100" "$APP_PLIST"
-          plutil -replace BuildMachineOSBuild -string "26A100" "$APP_PLIST"
+          cat << 'PLIST' > "$RUNNER_TEMP/ExportOptions.plist"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store-connect</string>
+              <key>teamID</key>
+              <string>Y6V67KQ9X2</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>br.com.unikprotege.notificacaopush</key>
+                  <string>bd922fb8-2b18-4e43-a570-55f7e0556ef4</string>
+              </dict>
+              <key>destination</key>
+              <string>export</string>
+              <key>stripSwiftSymbols</key>
+              <true/>
+              <key>manageAppVersionAndBuildNumber</key>
+              <false/>
+          </dict>
+          </plist>
+          PLIST
 
-          # Patchear binario Mach-O para LC_BUILD_VERSION (SDK 26.0)
-          BIN="$APP_DIR/CRMMEI"
-          vtool -show-build "$BIN" || true
-          vtool -set-build-version ios 16.0 26.0 -replace -output "$BIN" "$BIN" || true
-          vtool -show-build "$BIN" || true
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export"
 
-          # Reassina o app usando a chave do keychain e os entitlements originais
-          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$RUNNER_TEMP/build.keychain"
-          codesign --force --sign "Apple Distribution" --keychain "$RUNNER_TEMP/build.keychain" --timestamp --preserve-metadata=identifier,entitlements "$APP_DIR"
-
-          cd "$RUNNER_TEMP/export"
-          zip -q -r CRMMEI.ipa Payload
-          ls -lh CRMMEI.ipa
+          ls -la "$RUNNER_TEMP/export"
 
       - name: Upload to TestFlight (App Store Connect API)
         env:
@@ -97,4 +109,12 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
 
-          xcrun altool --upload-app             -f "$RUNNER_TEMP/export/CRMMEI.ipa"             -t ios             --apiKey "$APP_STORE_CONNECT_KEY_ID"             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+          IPA_FILE=$(ls $RUNNER_TEMP/export/*.ipa | head -n 1)
+          echo "Enviando: $IPA_FILE"
+
+          xcrun altool --upload-app \
+            -f "$IPA_FILE" \
+            -t ios \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" \
+            --verbose
