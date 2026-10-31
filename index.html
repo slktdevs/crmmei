@@ -1,0 +1,3860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#F8FAFC" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Parceiro Autônomo — CRM, Financeiro, Agenda & Mini Site</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --bg-app: #F8FAFC;
+      --card-surface: #FFFFFF;
+      --ink-primary: #0F172A;
+      --ink-secondary: #475569;
+      --ink-muted: #64748B;
+      --border-subtle: #E2E8F0;
+      --verde: #10B981;
+      --verde-escuro: #047857;
+      --verde-fundo: #ECFDF5;
+      --verde-borda: #A7F3D0;
+      --amarelo: #F59E0B;
+      --amarelo-escuro: #B45309;
+      --amarelo-fundo: #FFFBEB;
+      --amarelo-borda: #FDE68A;
+      --vermelho: #EF4444;
+      --vermelho-escuro: #B91C1C;
+      --vermelho-fundo: #FEF2F2;
+      --vermelho-borda: #FECACA;
+      --azul: #2563EB;
+      --azul-escuro: #1D4ED8;
+      --azul-fundo: #EFF6FF;
+      --azul-borda: #BFDBFE;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 10px;
+      color: var(--ink-primary);
+    }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      background: #0F172A;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+      max-width: 650px;
+      width: 100%;
+    }
+
+    .preview-badge {
+      background: var(--verde);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+
+    .toolbar-link {
+      color: #93C5FD;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      background: rgba(255,255,255,0.1);
+      padding: 5px 12px;
+      border-radius: 999px;
+      transition: background 0.15s ease;
+    }
+    .toolbar-link:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .iphone-frame {
+      width: 440px;
+      max-width: 100%;
+      height: 900px;
+      background: var(--bg-app);
+      border-radius: 52px;
+      border: 12px solid #0F172A;
+      box-shadow:
+        0 28px 60px rgba(15, 23, 42, 0.32),
+        0 0 0 2px #475569;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ios-status-bar {
+      height: 46px;
+      background: var(--bg-app);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      font-weight: 800;
+      font-size: 14px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 20;
+    }
+
+    .dynamic-island {
+      width: 110px;
+      height: 27px;
+      background: #0F172A;
+      border-radius: 999px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 16px 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .screen-content::-webkit-scrollbar { width: 0px; }
+
+    .accessible-card {
+      background: var(--card-surface);
+      border-radius: 20px;
+      border: 2px solid var(--border-subtle);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+      padding: 16px;
+    }
+
+    .btn-physical {
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFFFFF;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 15px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      user-select: none;
+      text-align: left;
+      width: 100%;
+    }
+
+    .btn-physical:active { transform: translateY(3px); }
+
+    .btn-verde { background: var(--verde); box-shadow: 0 4px 0 var(--verde-escuro); }
+    .btn-verde:active { box-shadow: 0 1px 0 var(--verde-escuro); }
+
+    .btn-amarelo { background: var(--amarelo); box-shadow: 0 4px 0 var(--amarelo-escuro); }
+    .btn-amarelo:active { box-shadow: 0 1px 0 var(--amarelo-escuro); }
+
+    .btn-azul { background: var(--azul); box-shadow: 0 4px 0 var(--azul-escuro); }
+    .btn-azul:active { box-shadow: 0 1px 0 var(--azul-escuro); }
+
+    .btn-vermelho { background: var(--vermelho); box-shadow: 0 4px 0 var(--vermelho-escuro); }
+    .btn-vermelho:active { box-shadow: 0 1px 0 var(--vermelho-escuro); }
+
+    .btn-escuro { background: var(--ink-primary); box-shadow: 0 4px 0 #000; }
+    .btn-escuro:active { box-shadow: 0 1px 0 #000; }
+
+    .btn-branco {
+      background: #FFFFFF;
+      color: var(--ink-primary);
+      border: 2px solid #CBD5E1;
+      box-shadow: 0 4px 0 #CBD5E1;
+    }
+    .btn-branco:active { box-shadow: 0 1px 0 #CBD5E1; }
+
+    .icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar-initials {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: var(--azul-fundo);
+      color: var(--azul);
+      border: 2px solid rgba(37, 99, 235, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #FFFFFF;
+      border: 2px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 11px 14px;
+    }
+    .search-box:focus-within { border-color: var(--azul); }
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      width: 100%;
+    }
+
+    .filter-chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .filter-chips-row::-webkit-scrollbar { height: 0px; }
+
+    .filter-chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border-subtle);
+      background: #FFFFFF;
+      color: var(--ink-secondary);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-chip.active {
+      background: var(--ink-primary);
+      border-color: var(--ink-primary);
+      color: #FFFFFF;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink-secondary);
+    }
+
+    .clean-text-input, .clean-select, .clean-textarea {
+      font-size: 15px;
+      font-weight: 700;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 2px solid #CBD5E1;
+      background: var(--bg-app);
+      color: var(--ink-primary);
+      width: 100%;
+      outline: none;
+    }
+    .clean-text-input:focus, .clean-select:focus, .clean-textarea:focus {
+      border-color: var(--azul);
+      background: #fff;
+    }
+
+    .prof-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .prof-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: var(--ink-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .prof-title {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--ink-primary);
+    }
+
+    .prof-subtitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+      margin-top: 2px;
+    }
+
+    .fin-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 20px;
+      border-width: 2px;
+      border-style: solid;
+    }
+    .fin-card-verde { background: var(--verde-fundo); border-color: var(--verde); }
+    .fin-card-amarelo { background: var(--amarelo-fundo); border-color: var(--amarelo); cursor: pointer; }
+
+    .fin-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+    .fin-label { font-size: 15px; font-weight: 800; color: var(--ink-secondary); }
+    .fin-value { font-size: 26px; font-weight: 800; line-height: 1.1; margin-top: 3px; }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .mood-pill {
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bars-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 18px;
+      padding-top: 4px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 106px;
+      background: var(--bg-app);
+      border-radius: 14px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      border: 2px solid var(--border-subtle);
+    }
+
+    .bar-fill { width: 100%; border-radius: 12px; transition: height 0.4s ease; }
+
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quick-square-btn {
+      min-height: 122px;
+      padding: 15px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .quick-top-row { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .quick-circle-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .quick-title { font-size: 17px; font-weight: 800; line-height: 1.2; color: #fff; }
+
+    .bottom-tab-bar {
+      height: 80px;
+      background: #FFFFFF;
+      border-top: 2px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 6px 12px 6px;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 7px 2px;
+      border-radius: 13px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: var(--ink-secondary);
+      font-size: 11px;
+      font-weight: 800;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active { background: var(--azul); color: #FFFFFF; }
+
+    .crm-tabs { display: flex; gap: 6px; }
+    .crm-tab-btn {
+      flex: 1;
+      border: 2px solid var(--border-subtle);
+      background: #FFFFFF;
+      border-radius: 15px;
+      padding: 9px 5px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--ink-primary);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .crm-tab-btn.active-combinando,
+    .crm-tab-btn.active-prontoCobrar {
+      background: var(--amarelo);
+      border-color: var(--amarelo-escuro);
+      color: #fff;
+    }
+    .crm-tab-btn.active-fazendo {
+      background: var(--azul);
+      border-color: var(--azul-escuro);
+      color: #fff;
+    }
+    .crm-badge {
+      background: rgba(15, 23, 42, 0.12);
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    .wizard-modal {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-app);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .wizard-modal.open { display: flex; }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0%); }
+    }
+
+    .wizard-topbar {
+      padding: 46px 16px 12px 16px;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .close-btn {
+      border: none;
+      background: var(--vermelho-fundo);
+      color: var(--vermelho-escuro);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .steps-bar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .step-pill {
+      flex: 1;
+      padding: 9px 6px;
+      border-radius: 12px;
+      background: var(--bg-app);
+      color: var(--ink-secondary);
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+    }
+    .step-pill.active { background: var(--azul); color: #FFFFFF; }
+    .step-pill.done { background: var(--verde); color: #FFFFFF; }
+
+    .pos-display {
+      background: var(--verde-fundo);
+      border: 2.5px solid var(--verde);
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+    .pos-currency { font-size: 24px; font-weight: 800; color: var(--verde-escuro); }
+    .pos-digits { font-size: 36px; font-weight: 800; color: var(--verde-escuro); }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .key-btn {
+      height: 52px;
+      border-radius: 14px;
+      border: 2px solid var(--border-subtle);
+      background: var(--bg-app);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #CBD5E1;
+    }
+    .key-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #CBD5E1; }
+    .key-btn.backspace {
+      background: var(--vermelho);
+      color: #fff;
+      border-color: var(--vermelho-escuro);
+      box-shadow: 0 3px 0 var(--vermelho-escuro);
+    }
+
+    .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .catalog-item-btn {
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid var(--border-subtle);
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink-primary);
+      cursor: pointer;
+    }
+    .catalog-item-btn.selected {
+      background: var(--azul);
+      border-color: var(--azul-escuro);
+      color: #FFFFFF;
+    }
+
+    .pdf-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 2px solid #CBD5E1;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    }
+    .pdf-header {
+      padding: 16px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pdf-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .pdf-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pdf-total-box {
+      background: var(--verde-fundo);
+      border: 2px solid var(--verde);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .portfolio-photo-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border-subtle);
+      background: #fff;
+    }
+    .portfolio-img-cover {
+      height: 118px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      position: relative;
+    }
+
+    .log-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px;
+      background: var(--bg-app);
+      border-radius: 12px;
+      border-left: 4px solid var(--azul);
+    }
+    .log-item.material { border-left-color: var(--amarelo); }
+    .log-item.avanco { border-left-color: var(--verde); }
+
+    .toast-banner {
+      position: absolute;
+      bottom: 92px;
+      left: 16px;
+      right: 16px;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 800;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 95;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
+    }
+    .toast-banner.show { display: flex; }
+
+    /* ========================================================
+       SISTEMA RESPONSIVO MULTI-DISPOSITIVO (MOBILE FIRST)
+       ======================================================== */
+
+    /* Scrollbars discretos e suaves */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 999px;
+    }
+
+    .screen-content {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    .filter-chips-row {
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .filter-chips-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* 1. Mobile Real (smartphones até 540px) */
+    @media (max-width: 540px) {
+      body {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: var(--bg-app) !important;
+        justify-content: flex-start !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+      }
+
+      .preview-toolbar {
+        display: none !important;
+      }
+
+      .iphone-frame {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      .ios-status-bar {
+        display: none !important;
+      }
+
+      .screen-content {
+        padding: 12px 14px 20px 14px !important;
+        gap: 12px !important;
+      }
+
+      .bottom-tab-bar {
+        padding-bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
+        height: auto !important;
+        min-height: 60px !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+      }
+
+      .tab-btn {
+        padding: 6px 2px !important;
+        min-width: 0 !important;
+      }
+
+      .tab-btn span {
+        font-size: 10px !important;
+        letter-spacing: -0.2px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+      }
+
+      .tab-btn i, .tab-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+
+      /* Grid de ações rápidas no celular */
+      .quick-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+
+      .quick-square-btn {
+        min-height: 98px !important;
+        padding: 11px !important;
+        border-radius: 14px !important;
+      }
+
+      .quick-title {
+        font-size: 13px !important;
+        line-height: 1.15 !important;
+      }
+
+      .quick-circle-icon {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 10px !important;
+      }
+
+      .quick-circle-icon i, .quick-circle-icon svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+
+      /* Cartões no celular */
+      .accessible-card {
+        padding: 14px !important;
+        border-radius: 16px !important;
+      }
+
+      .fin-card {
+        padding: 13px 14px !important;
+        border-radius: 16px !important;
+        gap: 12px !important;
+      }
+
+      .fin-icon-box {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 12px !important;
+      }
+
+      .fin-value {
+        font-size: 21px !important;
+      }
+
+      .fin-label {
+        font-size: 12px !important;
+      }
+
+      /* Wizard em tela cheia mobile */
+      .wizard-topbar {
+        padding: 10px 14px !important;
+        padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
+      }
+
+      .steps-bar {
+        padding: 8px 12px !important;
+      }
+    }
+
+    /* 2. Em telas médias e laptops (altura reduzida) */
+    @media (min-width: 541px) and (max-height: 860px) {
+      .iphone-frame {
+        height: 94vh !important;
+        max-height: 820px !important;
+      }
+
+      body {
+        padding: 8px 10px !important;
+      }
+
+      .preview-toolbar {
+        margin-bottom: 8px !important;
+        padding: 7px 14px !important;
+      }
+    }
+
+    /* 3. Telas ultracurtas (< 680px de altura) */
+    @media (min-width: 541px) and (max-height: 680px) {
+      .iphone-frame {
+        height: 98vh !important;
+        border-width: 8px !important;
+        border-radius: 36px !important;
+      }
+      .ios-status-bar {
+        height: 36px !important;
+      }
+      .dynamic-island {
+        height: 20px !important;
+        width: 90px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="preview-toolbar">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="preview-badge">SISTEMA COMPLETO</span>
+      <span>Editar Tudo + Logs + Agenda + Financeiro</span>
+    </div>
+    <a href="http://localhost:8080/site.html" target="_blank" class="toolbar-link">
+      <i data-lucide="external-link" style="width:14px; height:14px;"></i>
+      <span>Abrir Site em localhost</span>
+    </a>
+  </div>
+
+  <div class="iphone-frame">
+    <div class="ios-status-bar">
+      <span>09:41</span>
+      <div class="dynamic-island"></div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <i data-lucide="wifi" style="width:15px; height:15px;"></i>
+        <i data-lucide="battery-full" style="width:17px; height:17px;"></i>
+      </div>
+    </div>
+
+    <div id="mainScreen" class="screen-content"></div>
+
+    <div class="bottom-tab-bar">
+      <button class="tab-btn active" id="tab-inicio" onclick="mudarAbaPrincipal('inicio')">
+        <i data-lucide="layout-grid" style="width:20px; height:20px;"></i>
+        <span>Início</span>
+      </button>
+      <button class="tab-btn" id="tab-servicos" onclick="mudarAbaPrincipal('servicos')">
+        <i data-lucide="briefcase" style="width:20px; height:20px;"></i>
+        <span>Serviços</span>
+      </button>
+      <button class="tab-btn" id="tab-dinheiro" onclick="mudarAbaPrincipal('dinheiro')">
+        <i data-lucide="wallet" style="width:20px; height:20px;"></i>
+        <span>Dinheiro</span>
+      </button>
+      <button class="tab-btn" id="tab-clientes" onclick="mudarAbaPrincipal('clientes')">
+        <i data-lucide="users" style="width:20px; height:20px;"></i>
+        <span>Clientes</span>
+      </button>
+      <button class="tab-btn" id="tab-agenda" onclick="mudarAbaPrincipal('agenda')">
+        <i data-lucide="calendar" style="width:20px; height:20px;"></i>
+        <span>Agenda</span>
+      </button>
+      <button class="tab-btn" id="tab-minisite" onclick="mudarAbaPrincipal('minisite')">
+        <i data-lucide="globe" style="width:20px; height:20px;"></i>
+        <span>Meu Site</span>
+      </button>
+    </div>
+
+    <!-- Modal 1: Wizard de 3 Passos -->
+    <div id="wizardModal" class="wizard-modal">
+      <div class="wizard-topbar">
+        <button class="close-btn" onclick="fecharWizard()">
+          <i data-lucide="x" style="width:16px; height:16px;"></i>
+          <span>Fechar</span>
+        </button>
+        <div id="wizardTitle" style="font-size: 18px; font-weight: 800;">Fazer Orçamento</div>
+        <div style="width: 68px;"></div>
+      </div>
+      <div class="steps-bar">
+        <div id="stepPill1" class="step-pill active" onclick="irParaPasso(1)">1. Cliente</div>
+        <div id="stepPill2" class="step-pill" onclick="irParaPasso(2)">2. Serviço</div>
+        <div id="stepPill3" class="step-pill" onclick="irParaPasso(3)">3. Pronto</div>
+      </div>
+      <div id="wizardBody" class="screen-content" style="padding-bottom: 16px;"></div>
+      <div id="wizardFooter" style="padding: 12px 16px 18px 16px; background: #fff; border-top: 2px solid var(--border-subtle); display: flex; gap: 10px;"></div>
+    </div>
+
+    <!-- Modal 2: Visualização Mini Site em Localhost -->
+    <div id="publicSiteModal" class="wizard-modal">
+      <div class="wizard-topbar" style="background:#0F172A; color:#fff; border-bottom:none;">
+        <button class="close-btn" style="background:rgba(255,255,255,0.14); color:#fff;" onclick="fecharMiniSitePublico()">
+          <i data-lucide="arrow-left" style="width:16px; height:16px;"></i>
+          <span>Voltar ao App</span>
+        </button>
+        <div id="publicSiteUrlBar" style="font-size:12px; font-weight:700; color:#94A3B8; display:flex; align-items:center; gap:5px;">
+          <i data-lucide="lock" style="width:13px; height:13px; color:var(--verde);"></i>
+          <span>localhost:8080/site.html</span>
+        </div>
+        <a href="http://localhost:8080/site.html" target="_blank" style="border:none; text-decoration:none; background:var(--verde); color:#fff; padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800; display:flex; align-items:center; gap:4px;">
+          <i data-lucide="external-link" style="width:12px; height:12px;"></i>
+          <span>Aba Nova</span>
+        </a>
+      </div>
+      <div id="publicSiteBody" class="screen-content" style="padding:0 0 28px 0; gap:0;"></div>
+    </div>
+
+    <!-- Modal 3: EDITAR TUDO DO SERVIÇO & LOGS / HISTÓRICO -->
+    <div id="editarServicoModal" class="wizard-modal">
+      <div class="wizard-topbar">
+        <button class="close-btn" onclick="fecharModalEditarServico()">
+          <i data-lucide="x" style="width:16px; height:16px;"></i>
+          <span>Fechar</span>
+        </button>
+        <div style="font-size: 18px; font-weight: 800;">Editar Serviço & Logs</div>
+        <div style="width: 68px;"></div>
+      </div>
+      <div id="editarServicoBody" class="screen-content" style="padding-bottom: 24px;"></div>
+    </div>
+
+    <!-- Modal 4: EDITAR PARCELA ESPECÍFICA / PAGAMENTO -->
+    <div id="editarParcelaModal" class="wizard-modal">
+      <div class="wizard-topbar">
+        <button class="close-btn" onclick="fecharModalEditarParcela()">
+          <i data-lucide="x" style="width:16px; height:16px;"></i>
+          <span>Fechar</span>
+        </button>
+        <div style="font-size: 18px; font-weight: 800;">Editar Pagamento</div>
+        <div style="width: 68px;"></div>
+      </div>
+      <div id="editarParcelaBody" class="screen-content" style="padding-bottom: 24px;"></div>
+    </div>
+
+    <!-- Modal 5: EDITAR AGENDAMENTO DA AGENDA -->
+    <div id="editarAgendaModal" class="wizard-modal">
+      <div class="wizard-topbar">
+        <button class="close-btn" onclick="fecharModalEditarAgenda()">
+          <i data-lucide="x" style="width:16px; height:16px;"></i>
+          <span>Fechar</span>
+        </button>
+        <div style="font-size: 18px; font-weight: 800;">Editar Agendamento</div>
+        <div style="width: 68px;"></div>
+      </div>
+      <div id="editarAgendaBody" class="screen-content" style="padding-bottom: 24px;"></div>
+    </div>
+
+    <!-- Banner Toast -->
+    <div id="toastBanner" class="toast-banner">
+      <i data-lucide="check-circle-2" style="width:22px; height:22px; color:var(--verde);"></i>
+      <span id="toastText">Ação concluída!</span>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "parceiro_autonomo_v3_state";
+
+    const defaultState = {
+      empresa: {
+        nomeExibicao: "João Silva • Elétrica & Pintura",
+        nomeCurto: "Seu João",
+        slogan: "Serviço limpo, rápido e com garantia de 90 dias.",
+        telefoneWhatsApp: "(11) 98877-6655",
+        cidadeBairros: "Atendo Zona Sul, Centro e Região",
+        anosExperiencia: "12 anos de experiência",
+        slugUrl: "joao-reparos",
+        corTema: "#2563EB",
+        aceitaPix: true,
+        aceitaCartao: true,
+        notaMedia: "4.9",
+        totalAvaliacoes: 48
+      },
+      valorMesPassado: 2850,
+      abaAtiva: "inicio",
+      filtros: {
+        periodoDashboard: "esteMes",
+        crmAba: "prontoCobrar",
+        crmBusca: "",
+        crmCategoria: "todas",
+        finAba: "faltaReceber",
+        finBusca: "",
+        finMetodo: "todos",
+        clientesBusca: "",
+        clientesFiltro: "todos",
+        agendaFiltro: "todos"
+      },
+      forms: {
+        mostrarFormCliente: false,
+        clienteEditandoId: null,
+        cliNome: "",
+        cliBairro: "",
+        cliTelefone: "",
+
+        mostrarFormDespesa: false,
+        despesaEditandoId: null,
+        despTitulo: "",
+        despValor: "",
+        despCategoria: "Material",
+
+        mostrarFormCobrancaAvulsa: false,
+        cobClienteId: "cli1",
+        cobTitulo: "",
+        cobValor: "",
+        cobParcelas: 1,
+        cobMetodo: "Pix",
+
+        mostrarFormAgenda: false,
+        agClienteId: "cli1",
+        agTitulo: "",
+        agDia: "HOJE",
+        agHora: "14:00",
+        agValor: "250",
+
+        mostrarFormPortfolio: false,
+        portEditandoId: null,
+        portTitulo: "",
+        portCliente: "",
+        portPrecoBase: "",
+
+        abaMiniSite: "configurar"
+      },
+      catalogoServicos: [
+        { id: "c1", nomeCurto: "Pintura", icone: "paint-roller", valorSugerido: 300, visivelNoSite: true },
+        { id: "c2", nomeCurto: "Elétrica", icone: "zap", valorSugerido: 250, visivelNoSite: true },
+        { id: "c3", nomeCurto: "Alvenaria", icone: "hammer", valorSugerido: 450, visivelNoSite: true },
+        { id: "c4", nomeCurto: "Encanamento", icone: "droplet", valorSugerido: 180, visivelNoSite: true },
+        { id: "c5", nomeCurto: "Faxina", icone: "sparkles", valorSugerido: 200, visivelNoSite: false },
+        { id: "c6", nomeCurto: "Jardim", icone: "trees", valorSugerido: 150, visivelNoSite: false },
+        { id: "c7", nomeCurto: "Montagem", icone: "wrench", valorSugerido: 120, visivelNoSite: true },
+        { id: "c8", nomeCurto: "Telhado", icone: "home", valorSugerido: 380, visivelNoSite: true }
+      ],
+      portfolioObras: [
+        {
+          id: "pf1",
+          titulo: "Pintura Completa de Sala e Iluminação LED",
+          bairro: "Condomínio Flores",
+          tempoExecucao: "Feito em 2 dias",
+          precoBase: "A partir de R$ 450",
+          icone: "paint-roller",
+          corFundo: "linear-gradient(135deg, #2563EB, #1D4ED8)"
+        },
+        {
+          id: "pf2",
+          titulo: "Quadro Elétrico Novo + Disjuntores Padrão",
+          bairro: "Centro",
+          tempoExecucao: "Feito no mesmo dia",
+          precoBase: "A partir de R$ 350",
+          icone: "zap",
+          corFundo: "linear-gradient(135deg, #059669, #10B981)"
+        },
+        {
+          id: "pf3",
+          titulo: "Reforma de Telhado e Impermeabilização de Calha",
+          bairro: "Vila Nova",
+          tempoExecucao: "Garantia de 1 ano",
+          precoBase: "A partir de R$ 380",
+          icone: "home",
+          corFundo: "linear-gradient(135deg, #D97706, #F59E0B)"
+        }
+      ],
+      depoimentosSite: [
+        { id: "dep1", cliente: "Dona Maria", texto: "Muito caprichoso! Deixou tudo limpo depois de pintar a sala.", nota: 5 },
+        { id: "dep2", cliente: "Seu Carlos", texto: "Resolveu a parte elétrica da padaria no mesmo dia. Recomendo!", nota: 5 }
+      ],
+      clientes: [
+        { id: "cli1", nome: "Dona Maria", apelidoOuBairro: "Casa Verde - Portão Azul", telefone: "(11) 99123-4567", iniciais: "DM" },
+        { id: "cli2", nome: "Seu Carlos", apelidoOuBairro: "Padaria da Esquina", telefone: "(11) 99234-5678", iniciais: "SC" },
+        { id: "cli3", nome: "Dona Neide", apelidoOuBairro: "Sobrado Amarelo", telefone: "(11) 99345-6789", iniciais: "DN" },
+        { id: "cli4", nome: "Roberto Mecânico", apelidoOuBairro: "Perto do Mercado", telefone: "(11) 99456-7890", iniciais: "RM" },
+        { id: "cli5", nome: "Doutora Paula", apelidoOuBairro: "Condomínio Flores", telefone: "(11) 99567-8901", iniciais: "DP" }
+      ],
+      despesas: [
+        { id: "d1", titulo: "Latas de Tinta Acrílica e Rolos", categoria: "Material", valor: 220, data: "Ontem" },
+        { id: "d2", titulo: "Combustível da Semana", categoria: "Transporte", valor: 100, data: "Hoje" }
+      ],
+      servicos: [
+        {
+          id: "s5",
+          clienteId: "cli3",
+          tituloServico: "Conserto do Telhado",
+          categoria: "Telhado",
+          icone: "home",
+          valor: 400,
+          diaAgenda: "HOJE",
+          horaAgenda: "09:00",
+          metodoPagamento: "Pix",
+          status: "prontoCobrar",
+          temFotoAnexa: true,
+          observacao: "Troca de telhas combinada em 2 vezes de 200 reais",
+          logs: [
+            { id: "l5_1", dataHora: "Ontem, 16:30", texto: "Subiu no telhado e comprou 12 telhas novas", tipo: "material" },
+            { id: "l5_2", dataHora: "Hoje, 09:15", texto: "Telhado consertado. Aguardando 2ª parcela da cliente", tipo: "avanco" }
+          ],
+          parcelas: [
+            { id: "p5_1", numero: 1, totalParcelas: 2, valor: 200, vencimentoTexto: "Entrada (Paga)", pago: true, atrasada: false },
+            { id: "p5_2", numero: 2, totalParcelas: 2, valor: 200, vencimentoTexto: "Atrasada há 4 dias", pago: false, atrasada: true }
+          ]
+        },
+        {
+          id: "s2",
+          clienteId: "cli2",
+          tituloServico: "Pintura da Fachada",
+          categoria: "Pintura",
+          icone: "paint-roller",
+          valor: 1200,
+          diaAgenda: "HOJE",
+          horaAgenda: "14:00",
+          metodoPagamento: "Pix",
+          status: "prontoCobrar",
+          temFotoAnexa: true,
+          observacao: "Pintura completa da frente da padaria em 3 parcelas de 400 reais",
+          logs: [
+            { id: "l2_1", dataHora: "Há 3 dias", texto: "Cliente pagou a entrada de R$ 400", tipo: "nota" },
+            { id: "l2_2", dataHora: "Hoje, 11:00", texto: "Terminou demão de acabamento", tipo: "avanco" }
+          ],
+          parcelas: [
+            { id: "p2_1", numero: 1, totalParcelas: 3, valor: 400, vencimentoTexto: "1ª Parcela (Paga)", pago: true, atrasada: false },
+            { id: "p2_2", numero: 2, totalParcelas: 3, valor: 400, vencimentoTexto: "Vence HOJE", pago: false, atrasada: false },
+            { id: "p2_3", numero: 3, totalParcelas: 3, valor: 400, vencimentoTexto: "Dia 15 (Mês que vem)", pago: false, atrasada: false }
+          ]
+        },
+        {
+          id: "s6",
+          clienteId: "cli4",
+          tituloServico: "Tomadas Trifásicas",
+          categoria: "Elétrica",
+          icone: "zap",
+          valor: 500,
+          diaAgenda: "AMANHÃ",
+          horaAgenda: "10:30",
+          metodoPagamento: "Cartão",
+          status: "fazendo",
+          temFotoAnexa: false,
+          observacao: "Metade de entrada e metade quando terminar",
+          logs: [
+            { id: "l6_1", dataHora: "Hoje, 08:30", texto: "Iniciou fiação do circuito trifásico", tipo: "avanco" }
+          ],
+          parcelas: [
+            { id: "p6_1", numero: 1, totalParcelas: 2, valor: 250, vencimentoTexto: "Entrada (Paga)", pago: true, atrasada: false },
+            { id: "p6_2", numero: 2, totalParcelas: 2, valor: 250, vencimentoTexto: "Na Entrega (Amanhã)", pago: false, atrasada: false }
+          ]
+        },
+        {
+          id: "s4",
+          clienteId: "cli1",
+          tituloServico: "Pintura da Sala",
+          categoria: "Pintura",
+          icone: "paint-roller",
+          valor: 300,
+          diaAgenda: "HOJE",
+          horaAgenda: "16:30",
+          metodoPagamento: "Dinheiro",
+          status: "prontoCobrar",
+          temFotoAnexa: true,
+          observacao: "Pintura completa da sala",
+          logs: [
+            { id: "l4_1", dataHora: "Hoje, 14:00", texto: "Protegeu móveis e iniciou massa corrida", tipo: "avanco" }
+          ],
+          parcelas: [
+            { id: "p4_1", numero: 1, totalParcelas: 1, valor: 300, vencimentoTexto: "Vence HOJE", pago: false, atrasada: false }
+          ]
+        },
+        {
+          id: "s1",
+          clienteId: "cli1",
+          tituloServico: "Troca de Fiação",
+          categoria: "Elétrica",
+          icone: "zap",
+          valor: 250,
+          diaAgenda: "PAGO",
+          horaAgenda: "08:00",
+          metodoPagamento: "Pix",
+          status: "pago",
+          temFotoAnexa: true,
+          observacao: "Troca de fiação do chuveiro e duas tomadas da cozinha",
+          logs: [
+            { id: "l1_1", dataHora: "Concluído", texto: "Serviço finalizado e pago à vista no Pix", tipo: "nota" }
+          ],
+          parcelas: [
+            { id: "p1_1", numero: 1, totalParcelas: 1, valor: 250, vencimentoTexto: "Pago à Vista", pago: true, atrasada: false }
+          ]
+        },
+        {
+          id: "s3",
+          clienteId: "cli5",
+          tituloServico: "Muro dos Fundos",
+          categoria: "Alvenaria",
+          icone: "hammer",
+          valor: 2000,
+          diaAgenda: "PAGO",
+          horaAgenda: "09:00",
+          metodoPagamento: "Pix",
+          status: "pago",
+          temFotoAnexa: false,
+          observacao: "Reboco e acerto do muro dos fundos em 2 vezes pagas",
+          logs: [
+            { id: "l3_1", dataHora: "Finalizado", texto: "Ambas as parcelas recebidas", tipo: "nota" }
+          ],
+          parcelas: [
+            { id: "p3_1", numero: 1, totalParcelas: 2, valor: 1000, vencimentoTexto: "1ª Parcela (Paga)", pago: true, atrasada: false },
+            { id: "p3_2", numero: 2, totalParcelas: 2, valor: 1000, vencimentoTexto: "2ª Parcela (Paga)", pago: true, atrasada: false }
+          ]
+        },
+        {
+          id: "s7",
+          clienteId: "cli2",
+          tituloServico: "Cano da Pia",
+          categoria: "Encanamento",
+          icone: "droplet",
+          valor: 180,
+          diaAgenda: "SEMANA",
+          horaAgenda: "11:00",
+          metodoPagamento: "Pix",
+          status: "combinando",
+          temFotoAnexa: true,
+          observacao: "Tirar vazamento embaixo do balcão",
+          logs: [],
+          parcelas: [
+            { id: "p7_1", numero: 1, totalParcelas: 1, valor: 180, vencimentoTexto: "À Vista", pago: false, atrasada: false }
+          ]
+        },
+        {
+          id: "s8",
+          clienteId: "cli5",
+          tituloServico: "Podar Jardim",
+          categoria: "Jardim",
+          icone: "trees",
+          valor: 350,
+          diaAgenda: "SEMANA",
+          horaAgenda: "15:00",
+          metodoPagamento: "Dinheiro",
+          status: "combinando",
+          temFotoAnexa: false,
+          observacao: "Cortar grama e podar cerca viva da frente",
+          logs: [],
+          parcelas: [
+            { id: "p8_1", numero: 1, totalParcelas: 1, valor: 350, vencimentoTexto: "À Vista", pago: false, atrasada: false }
+          ]
+        }
+      ],
+      wizard: {
+        aberto: false,
+        tipo: "orcamento",
+        passo: 1,
+        servicoExistenteId: null,
+        clienteSelecionadoId: "cli1",
+        catalogoSelecionadoId: "c1",
+        descricao: "",
+        valorString: "300",
+        qtdParcelas: 1,
+        metodoPagamento: "Pix",
+        temFotoAnexa: false
+      }
+    };
+
+    function carregarEstado() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return Object.assign({}, defaultState, parsed);
+        }
+      } catch (e) {
+        console.error("Erro ao ler localStorage", e);
+      }
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    let state = carregarEstado();
+
+    // Configuração da API Hostinger (entendalegal.com)
+    const API_URL = "https://entendalegal.com/api.php";
+    let syncTimeout = null;
+
+    function persistirEstado(sincronizarRemoto = true) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error("Erro ao salvar localStorage", e);
+      }
+
+      if (sincronizarRemoto) {
+        clearTimeout(syncTimeout);
+        syncTimeout = setTimeout(sincronizarComBancoHostinger, 1200);
+      }
+    }
+
+    async function sincronizarComBancoHostinger() {
+      try {
+        const resp = await fetch(`${API_URL}?action=salvar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ state: state })
+        });
+        if (resp.ok) {
+          const res = await resp.json();
+          console.log("[Hostinger MySQL] Sincronizado:", res);
+        }
+      } catch (err) {
+        // Se a API ainda não estiver hospedada em entendalegal.com, mantém os dados no localStorage com total segurança
+        console.log("[Hostinger MySQL] Operando em modo seguro local até o upload do api.php.");
+      }
+    }
+
+    async function carregarDadosDoBancoHostinger() {
+      try {
+        const resp = await fetch(`${API_URL}?action=obter`);
+        if (resp.ok) {
+          const res = await resp.json();
+          if (res.status === "success" && res.state) {
+            state = Object.assign({}, defaultState, res.state);
+            persistirEstado(false);
+            renderizarTelaPrincipal();
+    carregarDadosDoBancoHostinger();
+            console.log("[Hostinger MySQL] Dados carregados da nuvem com sucesso!");
+          }
+        }
+      } catch (e) {}
+    }
+
+    window.addEventListener("storage", (ev) => {
+      if (ev.key === STORAGE_KEY && ev.newValue) {
+        try {
+          state = JSON.parse(ev.newValue);
+          renderizarTelaPrincipal();
+        } catch (e) {}
+      }
+    });
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+
+    function obterIniciais(nome) {
+      const partes = (nome || "Cliente").trim().split(/\s+/);
+      if (partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+      return (nome || "CL").slice(0, 2).toUpperCase();
+    }
+
+    function obterCliente(clienteId) {
+      return state.clientes.find(c => c.id === clienteId) || state.clientes[0] || { nome: "Cliente", apelidoOuBairro: "-", telefone: "-", iniciais: "CL" };
+    }
+
+    function valorPagoDoServico(s) {
+      return (s.parcelas || []).filter(p => p.pago).reduce((acc, p) => acc + p.valor, 0);
+    }
+
+    function valorFaltaDoServico(s) {
+      return (s.parcelas || []).filter(p => !p.pago).reduce((acc, p) => acc + p.valor, 0);
+    }
+
+    function servicoTemAtraso(s) {
+      return (s.parcelas || []).some(p => !p.pago && p.atrasada);
+    }
+
+    function totalNoBolso() {
+      const base = state.servicos
+        .filter(s => s.status !== "combinando")
+        .reduce((acc, s) => acc + valorPagoDoServico(s), 0);
+      if (state.filtros.periodoDashboard === "ultimos3Meses") return base * 3 - 450;
+      if (state.filtros.periodoDashboard === "anoTodo") return base * 9 + 1200;
+      return base;
+    }
+
+    function totalParaReceber() {
+      return state.servicos
+        .filter(s => s.status === "prontoCobrar" || s.status === "fazendo")
+        .reduce((acc, s) => acc + valorFaltaDoServico(s), 0);
+    }
+
+    function totalAtrasado() {
+      return state.servicos
+        .filter(s => s.status !== "combinando")
+        .reduce((acc, s) => {
+          const somaAtr = (s.parcelas || []).filter(p => !p.pago && p.atrasada).reduce((a, b) => a + b.valor, 0);
+          return acc + somaAtr;
+        }, 0);
+    }
+
+    function totalDespesas() {
+      return state.despesas.reduce((acc, d) => acc + d.valor, 0);
+    }
+
+    function mostrarToast(texto) {
+      const banner = document.getElementById("toastBanner");
+      document.getElementById("toastText").textContent = texto;
+      banner.classList.add("show");
+      setTimeout(() => banner.classList.remove("show"), 3000);
+    }
+
+    function atualizarIcones() {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function mudarAbaPrincipal(aba) {
+      state.abaAtiva = aba;
+      persistirEstado();
+      ["inicio", "servicos", "dinheiro", "clientes", "agenda", "minisite"].forEach(id => {
+        const el = document.getElementById("tab-" + id);
+        if (el) el.classList.toggle("active", id === aba);
+      });
+      renderizarTelaPrincipal();
+    }
+
+
+    // ==========================================
+    // FUNÇÕES CRUD GLOBAIS ADICIONAIS
+    // ==========================================
+    function abrirModalEditarCatalogo(id) {
+      const cat = state.catalogoServicos.find(c => c.id === id);
+      if (!cat) return;
+      const novoNome = prompt("Nome do serviço no catálogo:", cat.nomeCurto);
+      if (novoNome === null) return;
+      const novoValor = prompt("Preço base sugerido (R$):", cat.valorSugerido);
+      if (novoValor === null) return;
+
+      cat.nomeCurto = novoNome.trim() || cat.nomeCurto;
+      cat.valorSugerido = parseInt(novoValor || "0", 10);
+      persistirEstado();
+      mostrarToast("Serviço do catálogo atualizado!");
+      renderizarTelaPrincipal();
+    }
+
+    function adicionarItemAoCatalogo() {
+      const nome = prompt("Nome do novo serviço a oferecer no catálogo (ex: Instalação de Ar Condicionado):");
+      if (!nome || !nome.trim()) return;
+      const valor = prompt("Preço sugerido ou inicial (R$):", "250");
+      const novoItem = {
+        id: "cat_" + Date.now(),
+        nomeCurto: nome.trim(),
+        icone: "wrench",
+        valorSugerido: parseInt(valor || "0", 10),
+        visivelNoSite: true
+      };
+      state.catalogoServicos.push(novoItem);
+      persistirEstado();
+      mostrarToast("Novo serviço adicionado ao catálogo!");
+      renderizarTelaPrincipal();
+    }
+
+    function excluirItemDoCatalogo(id) {
+      if (!confirm("Tem certeza que deseja remover este serviço do catálogo?")) return;
+      state.catalogoServicos = state.catalogoServicos.filter(c => c.id !== id);
+      persistirEstado();
+      mostrarToast("Serviço removido do catálogo!");
+      renderizarTelaPrincipal();
+    }
+
+    function excluirCompromissoAgenda(id) {
+      if (!confirm("Deseja realmente excluir este agendamento?")) return;
+      state.servicos = state.servicos.filter(s => s.id !== id);
+      persistirEstado();
+      mostrarToast("Agendamento excluído!");
+      renderizarTelaPrincipal();
+    }
+
+    function renderizarTelaPrincipal() {
+      const container = document.getElementById("mainScreen");
+      if (state.abaAtiva === "inicio") {
+        container.innerHTML = renderDashboardHTML();
+      } else if (state.abaAtiva === "servicos") {
+        container.innerHTML = renderCRMBoardHTML();
+      } else if (state.abaAtiva === "dinheiro") {
+        container.innerHTML = renderFinanceiroHTML();
+      } else if (state.abaAtiva === "clientes") {
+        container.innerHTML = renderClientesHTML();
+      } else if (state.abaAtiva === "agenda") {
+        container.innerHTML = renderAgendaHTML();
+      } else if (state.abaAtiva === "minisite") {
+        container.innerHTML = renderMiniSiteBuilderHTML();
+      }
+      atualizarIcones();
+    }
+
+    function mudarPeriodoDashboard(p) {
+      state.filtros.periodoDashboard = p;
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function renderDashboardHTML() {
+      const bolso = totalNoBolso();
+      const receber = totalParaReceber();
+      const mult = state.filtros.periodoDashboard === "ultimos3Meses" ? 3 : (state.filtros.periodoDashboard === "anoTodo" ? 9 : 1);
+      const passado = state.valorMesPassado * mult;
+      const subiu = bolso >= passado;
+      const maxVal = Math.max(bolso, passado, 1);
+      const altPassado = Math.max(26, Math.round((passado / maxVal) * 102));
+      const altAtual = Math.max(26, Math.round((bolso / maxVal) * 102));
+      const p = state.filtros.periodoDashboard;
+
+      return `
+        <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="prof-header">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="prof-avatar" style="background:${state.empresa.corTema || '#2563EB'};">
+                <i data-lucide="wrench" style="width:24px; height:24px;"></i>
+              </div>
+              <div>
+                <div class="prof-title">Olá, ${state.empresa.nomeCurto}</div>
+                <div class="prof-subtitle">${state.empresa.nomeExibicao}</div>
+              </div>
+            </div>
+            <a href="http://localhost:8080/site.html" target="_blank" style="text-decoration:none; background:var(--azul-fundo); color:var(--azul); padding:8px 12px; border-radius:12px; font-weight:800; font-size:13px; display:flex; align-items:center; gap:6px;">
+              <i data-lucide="globe" style="width:16px; height:16px;"></i>
+              <span>Ver Site</span>
+            </a>
+          </div>
+
+          <div style="background:var(--bg-app); border:1.5px solid var(--border-subtle); border-radius:14px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+              <i data-lucide="link" style="width:16px; height:16px; color:var(--azul); flex-shrink:0;"></i>
+              <span style="font-size:13px; font-weight:800; color:var(--ink-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">localhost:8080/site.html</span>
+            </div>
+            <div style="display:flex; gap:6px; flex-shrink:0;">
+              <button onclick="copiarLinkMiniSite()" style="border:none; background:#fff; border:1.5px solid #CBD5E1; padding:5px 10px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">Copiar</button>
+              <button onclick="mudarAbaPrincipal('minisite')" style="border:none; background:var(--azul); color:#fff; padding:5px 10px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">Editar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-chips-row">
+          <button class="filter-chip ${p === 'esteMes' ? 'active' : ''}" onclick="mudarPeriodoDashboard('esteMes')">Este Mês</button>
+          <button class="filter-chip ${p === 'ultimos3Meses' ? 'active' : ''}" onclick="mudarPeriodoDashboard('ultimos3Meses')">Últimos 3 Meses</button>
+          <button class="filter-chip ${p === 'anoTodo' ? 'active' : ''}" onclick="mudarPeriodoDashboard('anoTodo')">Ano Todo</button>
+        </div>
+
+        <div class="fin-card fin-card-verde" onclick="mudarAbaPrincipal('dinheiro')" style="cursor:pointer;">
+          <div class="fin-icon-box" style="background: var(--verde);">
+            <i data-lucide="arrow-down-left" style="width:28px; height:28px;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div class="fin-label">No Bolso (Já Recebi)</div>
+            <div class="fin-value" style="color: var(--verde-escuro);">${formatarMoeda(bolso)}</div>
+          </div>
+          <i data-lucide="chevron-right" style="width:24px; height:24px; color:var(--verde-escuro);"></i>
+        </div>
+
+        <div class="fin-card fin-card-amarelo" onclick="mudarAbaPrincipal('dinheiro')">
+          <div class="fin-icon-box" style="background: var(--amarelo);">
+            <i data-lucide="clock" style="width:26px; height:26px;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div class="fin-label">Para Receber (Na Rua)</div>
+            <div class="fin-value" style="color: var(--amarelo-escuro);">${formatarMoeda(receber)}</div>
+            <div style="font-size:13px; font-weight:800; color:var(--amarelo-escuro); margin-top:2px;">Toque para gerenciar parcelas</div>
+          </div>
+          <i data-lucide="chevron-right" style="width:24px; height:24px; color:var(--amarelo-escuro);"></i>
+        </div>
+
+        <!-- Gráfico Comparativo Moderno & Respirável -->
+        <div class="accessible-card" style="padding:16px;">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px;">
+            <div>
+              <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-secondary);">Evolução de Ganhos</div>
+              <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
+                <span style="font-size:22px; font-weight:900; color:var(--ink-primary);">${formatarMoeda(bolso)}</span>
+                <span style="font-size:11px; font-weight:600; color:var(--ink-secondary);">recebido</span>
+              </div>
+            </div>
+
+            <div style="display:inline-flex; align-items:center; gap:4px; padding:5px 12px; border-radius:999px; background:${subiu ? 'var(--verde-fundo)' : 'var(--vermelho-fundo)'}; color:${subiu ? 'var(--verde-escuro)' : 'var(--vermelho-escuro)'}; border:1px solid ${subiu ? 'var(--verde-borda)' : 'var(--vermelho-borda)'}; font-size:12px; font-weight:800;">
+              <i data-lucide="${subiu ? 'trending-up' : 'trending-down'}" style="width:14px; height:14px;"></i>
+              <span>${subiu ? '+' : '-'}${passado > 0 ? Math.round(Math.abs(bolso - passado)/passado*100) : 100}%</span>
+            </div>
+          </div>
+
+          <div style="background:#F1F5F9; border:1px solid var(--border-subtle); border-radius:14px; padding:16px 20px 12px 20px; position:relative;">
+            <div style="position:absolute; left:20px; right:20px; top:30px; border-top:1px dashed #CBD5E1; opacity:0.6; pointer-events:none;"></div>
+            <div style="position:absolute; left:20px; right:20px; top:65px; border-top:1px dashed #CBD5E1; opacity:0.6; pointer-events:none;"></div>
+
+            <div style="display:flex; align-items:flex-end; justify-content:space-around; height:100px; gap:20px; position:relative; z-index:1;">
+              
+              <!-- Coluna Anterior -->
+              <div style="flex:1; max-width:115px; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end;">
+                <span style="font-size:11px; font-weight:700; color:var(--ink-secondary); margin-bottom:6px;">${formatarMoeda(passado)}</span>
+                <div style="width:100%; height:${altPassado}px; background:#94A3B8; border-radius:8px 8px 3px 3px; transition:height 0.3s ease;"></div>
+              </div>
+
+              <!-- Coluna Atual -->
+              <div style="flex:1; max-width:115px; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end;">
+                <span style="font-size:12px; font-weight:900; color:${subiu ? 'var(--verde-escuro)' : 'var(--vermelho-escuro)'}; margin-bottom:6px;">${formatarMoeda(bolso)}</span>
+                <div style="width:100%; height:${altAtual}px; background:${subiu ? 'var(--verde)' : 'var(--amarelo)'}; border-radius:8px 8px 3px 3px; box-shadow:0 2px 8px ${subiu ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}; transition:height 0.3s ease;"></div>
+              </div>
+
+            </div>
+
+            <div style="display:flex; justify-content:space-around; gap:20px; margin-top:8px; border-top:1px solid #CBD5E1; padding-top:6px;">
+              <div style="flex:1; max-width:115px; text-align:center;">
+                <div style="font-size:11px; font-weight:700; color:var(--ink-secondary);">${p === 'esteMes' ? 'Mês Passado' : (p === 'ultimos3Meses' ? 'Tri Anterior' : 'Ano Passado')}</div>
+              </div>
+              <div style="flex:1; max-width:115px; text-align:center;">
+                <div style="font-size:11px; font-weight:800; color:var(--ink-primary);">${p === 'esteMes' ? 'Este Mês' : (p === 'ultimos3Meses' ? 'Últimos 3 Meses' : 'Ano Atual')}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--ink-secondary);">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:7px; height:7px; border-radius:50%; background:${subiu ? 'var(--verde)' : 'var(--amarelo)'};"></span>
+              <span>${subiu ? 'Superando o período anterior' : 'Abaixo do período anterior'}</span>
+            </div>
+            <span style="font-weight:800; color:${subiu ? 'var(--verde-escuro)' : 'var(--ink-primary)'};">${(bolso - passado) >= 0 ? '+' : ''}${formatarMoeda(bolso - passado)}</span>
+          </div>
+        </div>
+
+        <div style="font-size: 17px; font-weight: 800; margin-top: 2px;">Ações Rápidas</div>
+        <div class="quick-grid">
+          <button class="btn-physical btn-amarelo quick-square-btn" onclick="abrirWizard('orcamento')">
+            <div class="quick-top-row">
+              <div class="quick-circle-icon"><i data-lucide="file-plus-2" style="width:24px; height:24px;"></i></div>
+              <i data-lucide="arrow-up-right" style="width:20px; height:20px; opacity:0.8;"></i>
+            </div>
+            <div class="quick-title">Fazer<br>Orçamento</div>
+          </button>
+
+          <button class="btn-physical btn-verde quick-square-btn" onclick="abrirWizard('recibo')">
+            <div class="quick-top-row">
+              <div class="quick-circle-icon"><i data-lucide="check-circle" style="width:24px; height:24px;"></i></div>
+              <i data-lucide="arrow-up-right" style="width:20px; height:20px; opacity:0.8;"></i>
+            </div>
+            <div class="quick-title">Fazer<br>Recibo</div>
+          </button>
+
+          <a href="http://localhost:8080/site.html" target="_blank" class="btn-physical btn-azul quick-square-btn" style="text-decoration:none;">
+            <div class="quick-top-row">
+              <div class="quick-circle-icon"><i data-lucide="globe" style="width:24px; height:24px;"></i></div>
+              <i data-lucide="external-link" style="width:20px; height:20px; opacity:0.8;"></i>
+            </div>
+            <div class="quick-title">Meu Site em<br>localhost</div>
+          </a>
+
+          <button class="btn-physical btn-azul quick-square-btn" onclick="mudarAbaPrincipal('agenda')">
+            <div class="quick-top-row">
+              <div class="quick-circle-icon"><i data-lucide="calendar-clock" style="width:24px; height:24px;"></i></div>
+              <i data-lucide="arrow-up-right" style="width:20px; height:20px; opacity:0.8;"></i>
+            </div>
+            <div class="quick-title">Agenda de<br>Serviços</div>
+          </button>
+        </div>
+      `;
+    }
+
+    function mudarAbaCRM(aba) {
+      state.filtros.crmAba = aba;
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function avancarStatusServico(id) {
+      const item = state.servicos.find(s => s.id === id);
+      if (!item) return;
+      if (!item.logs) item.logs = [];
+      const agora = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+      if (item.status === "combinando") {
+        item.status = "fazendo";
+        item.logs.unshift({ id: "log_" + Date.now(), dataHora: `Hoje, ${agora}`, texto: "Orçamento aprovado. Serviço em andamento.", tipo: "avanco" });
+        state.filtros.crmAba = "fazendo";
+        mostrarToast("Serviço iniciado! Movido para Fazendo");
+      } else if (item.status === "fazendo") {
+        item.status = "prontoCobrar";
+        item.logs.unshift({ id: "log_" + Date.now(), dataHora: `Hoje, ${agora}`, texto: "Serviço concluído na obra. Pronto para cobrança.", tipo: "avanco" });
+        state.filtros.crmAba = "prontoCobrar";
+        mostrarToast("Serviço concluído! Pronto para cobrar");
+      }
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function excluirServico(id) {
+      if (!confirm("Tem certeza que deseja excluir este serviço?")) return;
+      state.servicos = state.servicos.filter(s => s.id !== id);
+      persistirEstado();
+      mostrarToast("Serviço removido");
+      renderizarTelaPrincipal();
+    }
+
+    function renderCRMBoardHTML() {
+      const aba = state.filtros.crmAba;
+      const busca = (state.filtros.crmBusca || "").toLowerCase();
+      const catFiltro = state.filtros.crmCategoria;
+
+      const qtdCombinando = state.servicos.filter(s => s.status === "combinando").length;
+      const qtdFazendo = state.servicos.filter(s => s.status === "fazendo").length;
+      const qtdPronto = state.servicos.filter(s => s.status === "prontoCobrar").length;
+
+      const lista = state.servicos.filter(s => {
+        if (s.status !== aba) return false;
+        const cli = obterCliente(s.clienteId);
+        const bateBusca = !busca ||
+          s.tituloServico.toLowerCase().includes(busca) ||
+          cli.nome.toLowerCase().includes(busca);
+        const bateCat = catFiltro === "todas" || s.categoria === catFiltro;
+        return bateBusca && bateCat;
+      });
+
+      const somaAba = lista.reduce((acc, s) => acc + s.valor, 0);
+      const categorias = ["todas", "Pintura", "Elétrica", "Alvenaria", "Encanamento", "Telhado", "Jardim"];
+
+      const cardsHTML = lista.map(servico => {
+        const cli = obterCliente(servico.clienteId);
+        const qtdLogs = (servico.logs || []).length;
+        const ultimoLog = qtdLogs > 0 ? servico.logs[0] : null;
+
+        let botaoAcaoHTML = "";
+        if (servico.status === "combinando") {
+          botaoAcaoHTML = `
+            <button class="btn-physical btn-azul" onclick="avancarStatusServico('${servico.id}')">
+              <i data-lucide="play" style="width:18px; height:18px;"></i>
+              <span style="flex:1;">Aprovar e Começar Serviço</span>
+              <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+            </button>
+          `;
+        } else if (servico.status === "fazendo") {
+          botaoAcaoHTML = `
+            <button class="btn-physical btn-amarelo" onclick="avancarStatusServico('${servico.id}')">
+              <i data-lucide="check" style="width:18px; height:18px;"></i>
+              <span style="flex:1;">Terminei! Pronto p/ Cobrar</span>
+              <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+            </button>
+          `;
+        } else if (servico.status === "prontoCobrar") {
+          botaoAcaoHTML = `
+            <button class="btn-physical btn-verde" onclick="transformarEmReciboPDF('${servico.id}')">
+              <i data-lucide="file-check-2" style="width:20px; height:20px;"></i>
+              <div style="flex:1;">
+                <div style="font-size: 16px; font-weight: 800;">Gerar Recibo PDF</div>
+                <div style="font-size: 12px; font-weight: 700; opacity: 0.9;">1 toque para receber e enviar no WhatsApp</div>
+              </div>
+              <i data-lucide="send" style="width:18px; height:18px;"></i>
+            </button>
+          `;
+        }
+
+        return `
+          <div class="accessible-card" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="avatar-initials">${cli.iniciais}</div>
+              <div style="flex: 1;">
+                <div style="font-size: 18px; font-weight: 800;">${cli.nome}</div>
+                <div style="display:flex; align-items:center; gap:6px; font-size: 14px; font-weight: 700; color: var(--ink-secondary); margin-top:2px;">
+                  <i data-lucide="${servico.icone || 'wrench'}" style="width:15px; height:15px; color:var(--azul);"></i>
+                  <span>${servico.tituloServico} • ${servico.metodoPagamento || 'Pix'}</span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:6px;">
+                <button onclick="abrirModalEditarServico('${servico.id}')" style="border:none; background:var(--azul-fundo); color:var(--azul); padding:7px 10px; border-radius:10px; cursor:pointer; display:flex; align-items:center; gap:4px; font-weight:800; font-size:12px;" title="Editar Serviço Completo & Logs">
+                  <i data-lucide="edit-3" style="width:15px; height:15px;"></i>
+                  <span>Editar</span>
+                </button>
+                <button onclick="excluirServico('${servico.id}')" style="border:none; background:var(--vermelho-fundo); color:var(--vermelho); width:34px; height:34px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir Serviço">
+                  <i data-lucide="trash-2" style="width:15px; height:15px;"></i>
+                </button>
+              </div>
+            </div>
+
+            <div style="background: var(--verde-fundo); padding: 10px 14px; border-radius: 13px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <span style="font-size: 13px; font-weight: 800; color: var(--ink-secondary);">Valor Total</span>
+                <div style="font-size: 12px; font-weight: 700; color: var(--verde-escuro);">${(servico.parcelas || []).length}x parcela(s)</div>
+              </div>
+              <span style="font-size: 22px; font-weight: 800; color: var(--verde-escuro);">${formatarMoeda(servico.valor)}</span>
+            </div>
+
+            <div style="background:var(--bg-app); border:1.5px solid var(--border-subtle); border-radius:12px; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                <i data-lucide="file-text" style="width:15px; height:15px; color:var(--azul); flex-shrink:0;"></i>
+                <span style="font-size:12px; font-weight:700; color:var(--ink-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${ultimoLog ? `${ultimoLog.dataHora}: ${ultimoLog.texto}` : 'Nenhum log registrado ainda'}
+                </span>
+              </div>
+              <button onclick="abrirModalEditarServico('${servico.id}', true)" style="border:none; background:transparent; color:var(--azul); font-size:12px; font-weight:800; cursor:pointer; white-space:nowrap;">
+                + Log (${qtdLogs})
+              </button>
+            </div>
+
+            ${botaoAcaoHTML}
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size:21px; font-weight:800;">Quadro de Serviços</div>
+          <button class="btn-physical btn-amarelo" style="width:auto; padding:8px 12px; font-size:13px;" onclick="abrirWizard('orcamento')">
+            <i data-lucide="plus" style="width:15px; height:15px;"></i>
+            <span>Novo Orçamento</span>
+          </button>
+        </div>
+
+        <div class="crm-tabs">
+          <button class="crm-tab-btn ${aba === 'combinando' ? 'active-combinando' : ''}" onclick="mudarAbaCRM('combinando')">
+            <div style="display:flex; align-items:center; gap:5px;">
+              <i data-lucide="message-square" style="width:16px; height:16px;"></i>
+              <span class="crm-badge">${qtdCombinando}</span>
+            </div>
+            <div>Combinando</div>
+          </button>
+          <button class="crm-tab-btn ${aba === 'fazendo' ? 'active-fazendo' : ''}" onclick="mudarAbaCRM('fazendo')">
+            <div style="display:flex; align-items:center; gap:5px;">
+              <i data-lucide="hammer" style="width:16px; height:16px;"></i>
+              <span class="crm-badge">${qtdFazendo}</span>
+            </div>
+            <div>Fazendo</div>
+          </button>
+          <button class="crm-tab-btn ${aba === 'prontoCobrar' ? 'active-prontoCobrar' : ''}" onclick="mudarAbaCRM('prontoCobrar')">
+            <div style="display:flex; align-items:center; gap:5px;">
+              <i data-lucide="dollar-sign" style="width:16px; height:16px;"></i>
+              <span class="crm-badge">${qtdPronto}</span>
+            </div>
+            <div>Pronto/Cobrar</div>
+          </button>
+        </div>
+
+        <div class="search-box">
+          <i data-lucide="search" style="width:18px; height:18px; color:var(--ink-secondary);"></i>
+          <input placeholder="Buscar por cliente ou serviço..." value="${state.filtros.crmBusca}" oninput="state.filtros.crmBusca=this.value; persistirEstado(); renderizarTelaPrincipal();" />
+          ${state.filtros.crmBusca ? `<button onclick="state.filtros.crmBusca=''; persistirEstado(); renderizarTelaPrincipal();" style="border:none; background:none; cursor:pointer; color:var(--ink-secondary);"><i data-lucide="x" style="width:16px; height:16px;"></i></button>` : ''}
+        </div>
+
+        <div class="filter-chips-row">
+          ${categorias.map(cat => `
+            <button class="filter-chip ${catFiltro === cat ? 'active' : ''}" onclick="state.filtros.crmCategoria='${cat}'; persistirEstado(); renderizarTelaPrincipal();">
+              ${cat === 'todas' ? 'Todas Categorias' : cat}
+            </button>
+          `).join("")}
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:0 4px;">
+          <span style="font-size:13px; font-weight:800; color:var(--ink-secondary);">${lista.length} serviço(s)</span>
+          <span style="font-size:15px; font-weight:800; color:var(--ink-primary);">Total: ${formatarMoeda(somaAba)}</span>
+        </div>
+
+        ${cardsHTML || `<div class="accessible-card" style="text-align:center; font-size:16px; font-weight:800; color:var(--ink-secondary);">Nenhum serviço encontrado para este filtro.</div>`}
+      `;
+    }
+
+    let servicoEmEdicaoId = null;
+
+    function abrirModalEditarServico(servicoId, focarNoLog = false) {
+      servicoEmEdicaoId = servicoId;
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+      if (!servico.logs) servico.logs = [];
+
+      renderizarModalEditarServico(servico);
+      document.getElementById("editarServicoModal").classList.add("open");
+      atualizarIcones();
+      if (focarNoLog) {
+        setTimeout(() => {
+          const inp = document.getElementById("novoLogInput");
+          if (inp) inp.focus();
+        }, 300);
+      }
+    }
+
+    function fecharModalEditarServico() {
+      document.getElementById("editarServicoModal").classList.remove("open");
+      servicoEmEdicaoId = null;
+      renderizarTelaPrincipal();
+    }
+
+    function renderizarModalEditarServico(servico) {
+      const cli = obterCliente(servico.clienteId);
+      const categorias = ["Pintura", "Elétrica", "Alvenaria", "Encanamento", "Telhado", "Jardim", "Geral"];
+
+      const logsHTML = (servico.logs || []).map(l => `
+        <div class="log-item ${l.tipo || 'nota'}">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <span style="font-size:11px; font-weight:800; color:var(--ink-secondary);">${l.dataHora}</span>
+              <button onclick="removerLogServico('${servico.id}', '${l.id}')" style="border:none; background:none; color:var(--vermelho); cursor:pointer;">
+                <i data-lucide="trash" style="width:14px; height:14px;"></i>
+              </button>
+            </div>
+            <div style="font-size:14px; font-weight:700; color:var(--ink-primary); margin-top:2px;">${l.texto}</div>
+          </div>
+        </div>
+      `).join("");
+
+      const parcelasHTML = (servico.parcelas || []).map(p => `
+        <div style="background:var(--bg-app); border:1.5px solid var(--border-subtle); border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div>
+            <div style="font-size:14px; font-weight:800;">${p.numero}ª Parcela: ${formatarMoeda(p.valor)}</div>
+            <div style="font-size:12px; font-weight:700; color:${p.pago ? 'var(--verde-escuro)' : (p.atrasada ? 'var(--vermelho-escuro)' : 'var(--ink-secondary)')};">
+              ${p.vencimentoTexto} • ${p.pago ? 'PAGA' : (p.atrasada ? 'ATRASADA' : 'PENDENTE')}
+            </div>
+          </div>
+          <button onclick="abrirModalEditarParcela('${servico.id}', '${p.id}')" style="border:none; background:var(--azul); color:#fff; padding:6px 10px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">
+            Editar
+          </button>
+        </div>
+      `).join("");
+
+      document.getElementById("editarServicoBody").innerHTML = `
+        <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:17px; font-weight:800;">Dados do Serviço</div>
+
+          <div class="form-group">
+            <label class="form-label">Título do Serviço</label>
+            <input id="editServTitulo" class="clean-text-input" value="${servico.tituloServico}" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <select id="editServCliente" class="clean-select">
+              ${state.clientes.map(c => `<option value="${c.id}" ${c.id === servico.clienteId ? 'selected' : ''}>${c.nome} (${c.apelidoOuBairro})</option>`).join("")}
+            </select>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Categoria</label>
+              <select id="editServCat" class="clean-select">
+                ${categorias.map(cat => `<option value="${cat}" ${cat === servico.categoria ? 'selected' : ''}>${cat}</option>`).join("")}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Valor Total (R$)</label>
+              <input id="editServValor" class="clean-text-input" type="number" value="${servico.valor}" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Forma de Pagamento</label>
+              <select id="editServMetodo" class="clean-select">
+                <option value="Pix" ${servico.metodoPagamento === 'Pix' ? 'selected' : ''}>Pix</option>
+                <option value="Dinheiro" ${servico.metodoPagamento === 'Dinheiro' ? 'selected' : ''}>Dinheiro</option>
+                <option value="Cartão" ${servico.metodoPagamento === 'Cartão' ? 'selected' : ''}>Cartão</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status no CRM</label>
+              <select id="editServStatus" class="clean-select">
+                <option value="combinando" ${servico.status === 'combinando' ? 'selected' : ''}>Combinando</option>
+                <option value="fazendo" ${servico.status === 'fazendo' ? 'selected' : ''}>Fazendo</option>
+                <option value="prontoCobrar" ${servico.status === 'prontoCobrar' ? 'selected' : ''}>Pronto / Cobrar</option>
+                <option value="pago" ${servico.status === 'pago' ? 'selected' : ''}>No Bolso (Pago)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Dia da Agenda</label>
+              <select id="editServDia" class="clean-select">
+                <option value="HOJE" ${servico.diaAgenda === 'HOJE' ? 'selected' : ''}>Hoje</option>
+                <option value="AMANHÃ" ${servico.diaAgenda === 'AMANHÃ' ? 'selected' : ''}>Amanhã</option>
+                <option value="SEMANA" ${servico.diaAgenda === 'SEMANA' ? 'selected' : ''}>Esta Semana</option>
+                <option value="PAGO" ${servico.diaAgenda === 'PAGO' ? 'selected' : ''}>Finalizado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Horário Marcado</label>
+              <input id="editServHora" class="clean-text-input" value="${servico.horaAgenda || '09:00'}" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observações / Detalhes</label>
+            <textarea id="editServObs" class="clean-textarea" rows="2">${servico.observacao || ''}</textarea>
+          </div>
+
+          <button class="btn-physical btn-verde" onclick="salvarEdicaoServico('${servico.id}')">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Salvar Alterações do Serviço</span>
+          </button>
+        </div>
+
+        <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:17px; font-weight:800;">Diário de Bordo & Logs</div>
+            <span style="font-size:12px; font-weight:800; background:var(--azul-fundo); color:var(--azul); padding:3px 9px; border-radius:999px;">${(servico.logs || []).length} logs</span>
+          </div>
+
+          <div style="display:flex; gap:6px;">
+            <input id="novoLogInput" class="clean-text-input" placeholder="Ex: Comprou fiação extra de 10m" style="flex:1;" />
+            <select id="novoLogTipo" class="clean-select" style="width:110px;">
+              <option value="avanco">Avanço</option>
+              <option value="material">Material</option>
+              <option value="nota">Nota</option>
+            </select>
+            <button onclick="adicionarLogAoServico('${servico.id}')" style="border:none; background:var(--azul); color:#fff; padding:0 14px; border-radius:14px; font-weight:800; cursor:pointer;">
+              <i data-lucide="plus" style="width:18px; height:18px;"></i>
+            </button>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+            ${logsHTML || '<div style="font-size:13px; font-weight:700; color:var(--ink-secondary); text-align:center;">Nenhum registro no diário deste serviço.</div>'}
+          </div>
+        </div>
+
+        <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:17px; font-weight:800;">Parcelas do Pagamento</div>
+            <button onclick="adicionarParcelaAoServico('${servico.id}')" style="border:none; background:var(--verde); color:#fff; padding:6px 12px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">
+              + Parcela
+            </button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${parcelasHTML}
+          </div>
+        </div>
+
+        <button class="btn-physical btn-vermelho" onclick="excluirServico('${servico.id}'); fecharModalEditarServico();" style="margin-top:6px;">
+          <i data-lucide="trash-2" style="width:18px; height:18px;"></i>
+          <span>Excluir Serviço Permanentemente</span>
+        </button>
+      `;
+      atualizarIcones();
+    }
+
+    function salvarEdicaoServico(servicoId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+
+      const titulo = document.getElementById("editServTitulo").value.trim() || servico.tituloServico;
+      const clienteId = document.getElementById("editServCliente").value;
+      const categoria = document.getElementById("editServCat").value;
+      const valor = parseInt(document.getElementById("editServValor").value || "0", 10);
+      const metodo = document.getElementById("editServMetodo").value;
+      const status = document.getElementById("editServStatus").value;
+      const dia = document.getElementById("editServDia").value;
+      const hora = document.getElementById("editServHora").value.trim() || "09:00";
+      const obs = document.getElementById("editServObs").value.trim();
+
+      servico.tituloServico = titulo;
+      servico.clienteId = clienteId;
+      servico.categoria = categoria;
+      servico.valor = valor;
+      servico.metodoPagamento = metodo;
+      servico.status = status;
+      servico.diaAgenda = dia;
+      servico.horaAgenda = hora;
+      servico.observacao = obs;
+
+      if (status === "pago") {
+        (servico.parcelas || []).forEach(p => { p.pago = true; p.atrasada = false; p.vencimentoTexto = "Pago"; });
+      }
+
+      persistirEstado();
+      mostrarToast("Serviço e detalhes salvos com sucesso");
+      fecharModalEditarServico();
+    }
+
+    function adicionarLogAoServico(servicoId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+      if (!servico.logs) servico.logs = [];
+
+      const texto = (document.getElementById("novoLogInput").value || "").trim();
+      const tipo = document.getElementById("novoLogTipo").value;
+      if (!texto) {
+        mostrarToast("Digite a nota do log");
+        return;
+      }
+
+      const agora = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      servico.logs.unshift({
+        id: "log_" + Date.now(),
+        dataHora: `Hoje, ${agora}`,
+        texto: texto,
+        tipo: tipo
+      });
+
+      persistirEstado();
+      mostrarToast("Novo log adicionado!");
+      renderizarModalEditarServico(servico);
+    }
+
+    function removerLogServico(servicoId, logId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico || !servico.logs) return;
+      servico.logs = servico.logs.filter(l => l.id !== logId);
+      persistirEstado();
+      mostrarToast("Log removido");
+      renderizarModalEditarServico(servico);
+    }
+
+    function adicionarParcelaAoServico(servicoId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+      if (!servico.parcelas) servico.parcelas = [];
+
+      const novoNum = servico.parcelas.length + 1;
+      const valorPadrao = Math.round(servico.valor / novoNum) || 100;
+      servico.parcelas.push({
+        id: "parc_" + Date.now() + "_" + novoNum,
+        numero: novoNum,
+        totalParcelas: novoNum,
+        valor: valorPadrao,
+        vencimentoTexto: `${novoNum}ª Parcela`,
+        pago: false,
+        atrasada: false
+      });
+      servico.parcelas.forEach(p => p.totalParcelas = servico.parcelas.length);
+
+      persistirEstado();
+      mostrarToast("Nova parcela adicionada");
+      renderizarModalEditarServico(servico);
+    }
+
+    let parcelaEmEdicao = null;
+
+    function abrirModalEditarParcela(servicoId, parcelaId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+      const parcela = (servico.parcelas || []).find(p => p.id === parcelaId);
+      if (!parcela) return;
+
+      parcelaEmEdicao = { servicoId, parcelaId };
+
+      document.getElementById("editarParcelaBody").innerHTML = `
+        <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:17px; font-weight:800;">Editar Parcela ${parcela.numero} de ${parcela.totalParcelas}</div>
+
+          <div class="form-group">
+            <label class="form-label">Valor desta Parcela (R$)</label>
+            <input id="editParcValor" class="clean-text-input" type="number" value="${parcela.valor}" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Texto de Vencimento / Data</label>
+            <input id="editParcVenc" class="clean-text-input" value="${parcela.vencimentoTexto}" placeholder="Ex: Vence HOJE, Dia 15/11..." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status do Pagamento</label>
+            <select id="editParcStatus" class="clean-select">
+              <option value="pago" ${parcela.pago ? 'selected' : ''}>PAGO (Já Recebi no Bolso)</option>
+              <option value="pendente" ${!parcela.pago && !parcela.atrasada ? 'selected' : ''}>PENDENTE (Aguardando Data)</option>
+              <option value="atrasada" ${!parcela.pago && parcela.atrasada ? 'selected' : ''}>ATRASADA (Conta Vencida)</option>
+            </select>
+          </div>
+
+          <button class="btn-physical btn-verde" onclick="salvarEdicaoParcela()">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Salvar Parcela</span>
+          </button>
+
+          <button class="btn-physical btn-vermelho" onclick="excluirParcela()">
+            <i data-lucide="trash-2" style="width:18px; height:18px;"></i>
+            <span>Excluir Esta Parcela</span>
+          </button>
+        </div>
+      `;
+
+      document.getElementById("editarParcelaModal").classList.add("open");
+      atualizarIcones();
+    }
+
+    function fecharModalEditarParcela() {
+      document.getElementById("editarParcelaModal").classList.remove("open");
+      parcelaEmEdicao = null;
+      if (servicoEmEdicaoId) {
+        const s = state.servicos.find(x => x.id === servicoEmEdicaoId);
+        if (s) renderizarModalEditarServico(s);
+      } else {
+        renderizarTelaPrincipal();
+      }
+    }
+
+    function salvarEdicaoParcela() {
+      if (!parcelaEmEdicao) return;
+      const servico = state.servicos.find(s => s.id === parcelaEmEdicao.servicoId);
+      if (!servico) return;
+      const parcela = (servico.parcelas || []).find(p => p.id === parcelaEmEdicao.parcelaId);
+      if (!parcela) return;
+
+      const valor = parseInt(document.getElementById("editParcValor").value || "0", 10);
+      const venc = document.getElementById("editParcVenc").value.trim() || parcela.vencimentoTexto;
+      const st = document.getElementById("editParcStatus").value;
+
+      parcela.valor = valor;
+      parcela.vencimentoTexto = venc;
+      if (st === "pago") {
+        parcela.pago = true;
+        parcela.atrasada = false;
+      } else if (st === "atrasada") {
+        parcela.pago = false;
+        parcela.atrasada = true;
+      } else {
+        parcela.pago = false;
+        parcela.atrasada = false;
+      }
+
+      const todasPagas = servico.parcelas.every(p => p.pago);
+      if (todasPagas) servico.status = "pago";
+
+      persistirEstado();
+      mostrarToast("Parcela atualizada!");
+      fecharModalEditarParcela();
+    }
+
+    function excluirParcela() {
+      if (!parcelaEmEdicao) return;
+      const servico = state.servicos.find(s => s.id === parcelaEmEdicao.servicoId);
+      if (!servico) return;
+
+      if ((servico.parcelas || []).length <= 1) {
+        mostrarToast("O serviço deve ter ao menos 1 parcela");
+        return;
+      }
+
+      servico.parcelas = servico.parcelas.filter(p => p.id !== parcelaEmEdicao.parcelaId);
+      servico.parcelas.forEach((p, idx) => {
+        p.numero = idx + 1;
+        p.totalParcelas = servico.parcelas.length;
+      });
+
+      persistirEstado();
+      mostrarToast("Parcela removida");
+      fecharModalEditarParcela();
+    }
+
+    function mudarFiltroFinanceiro(filtro) {
+      state.filtros.finAba = filtro;
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function receberParcelaIndividual(servicoId, parcelaId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+      const parcela = (servico.parcelas || []).find(p => p.id === parcelaId);
+      if (!parcela) return;
+
+      parcela.pago = true;
+      parcela.atrasada = false;
+      parcela.vencimentoTexto = "Pago";
+
+      if (!servico.logs) servico.logs = [];
+      const agora = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      servico.logs.unshift({
+        id: "log_" + Date.now(),
+        dataHora: `Hoje, ${agora}`,
+        texto: `Recebido ${formatarMoeda(parcela.valor)} referente à ${parcela.numero}ª parcela`,
+        tipo: "avanco"
+      });
+
+      const todasPagas = servico.parcelas.every(p => p.pago);
+      if (todasPagas) servico.status = "pago";
+
+      persistirEstado();
+      mostrarToast(`+ ${formatarMoeda(parcela.valor)} recebido no bolso!`);
+      renderizarTelaPrincipal();
+    }
+
+    function cobrarParcelaNoZap(servicoId, parcelaId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+      const cli = obterCliente(servico.clienteId);
+      mostrarToast(`Cobrança enviada para ${cli.nome} no WhatsApp`);
+    }
+
+    function salvarNovaCobrancaAvulsa() {
+      const titulo = state.forms.cobTitulo.trim() || "Serviço Avulso";
+      const valor = parseInt(state.forms.cobValor || "0", 10);
+      if (valor <= 0) {
+        mostrarToast("Digite um valor válido");
+        return;
+      }
+      const qtd = parseInt(state.forms.cobParcelas || 1, 10);
+      const valCada = Math.round(valor / qtd);
+
+      const novasParcelas = Array.from({ length: qtd }, (_, i) => ({
+        id: "parc_av_" + Date.now() + "_" + i,
+        numero: i + 1,
+        totalParcelas: qtd,
+        valor: valCada,
+        vencimentoTexto: i === 0 ? "Vence HOJE" : `${i + 1}ª Parcela`,
+        pago: false,
+        atrasada: false
+      }));
+
+      state.servicos.unshift({
+        id: "srv_av_" + Date.now(),
+        clienteId: state.forms.cobClienteId,
+        tituloServico: titulo,
+        categoria: "Geral",
+        icone: "wrench",
+        valor: valor,
+        diaAgenda: "HOJE",
+        horaAgenda: "12:00",
+        metodoPagamento: state.forms.cobMetodo,
+        status: "prontoCobrar",
+        temFotoAnexa: false,
+        observacao: "",
+        logs: [
+          { id: "log_" + Date.now(), dataHora: "Hoje", texto: "Cobrança avulsa criada", tipo: "nota" }
+        ],
+        parcelas: novasParcelas
+      });
+
+      state.forms.mostrarFormCobrancaAvulsa = false;
+      state.forms.cobTitulo = "";
+      state.forms.cobValor = "";
+      persistirEstado();
+      mostrarToast("Nova cobrança parcelada registrada");
+      renderizarTelaPrincipal();
+    }
+
+    function abrirEdicaoDespesa(id = null) {
+      if (id) {
+        const d = state.despesas.find(x => x.id === id);
+        if (d) {
+          state.forms.despesaEditandoId = d.id;
+          state.forms.despTitulo = d.titulo;
+          state.forms.despValor = String(d.valor);
+          state.forms.despCategoria = d.categoria;
+        }
+      } else {
+        state.forms.despesaEditandoId = null;
+        state.forms.despTitulo = "";
+        state.forms.despValor = "";
+        state.forms.despCategoria = "Material";
+      }
+      state.forms.mostrarFormDespesa = true;
+      state.forms.mostrarFormCobrancaAvulsa = false;
+      renderizarTelaPrincipal();
+    }
+
+    function salvarNovaDespesa() {
+      const titulo = state.forms.despTitulo.trim();
+      const valor = parseInt(state.forms.despValor || "0", 10);
+      if (!titulo || valor <= 0) {
+        mostrarToast("Preencha descrição e valor da despesa");
+        return;
+      }
+
+      if (state.forms.despesaEditandoId) {
+        const d = state.despesas.find(x => x.id === state.forms.despesaEditandoId);
+        if (d) {
+          d.titulo = titulo;
+          d.valor = valor;
+          d.categoria = state.forms.despCategoria;
+        }
+        mostrarToast("Gasto atualizado!");
+      } else {
+        state.despesas.unshift({
+          id: "desp_" + Date.now(),
+          titulo: titulo,
+          categoria: state.forms.despCategoria,
+          valor: valor,
+          data: "Hoje"
+        });
+        mostrarToast("Gasto registrado");
+      }
+
+      state.forms.mostrarFormDespesa = false;
+      state.forms.despesaEditandoId = null;
+      state.forms.despTitulo = "";
+      state.forms.despValor = "";
+      state.filtros.finAba = "despesas";
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function excluirDespesa(id) {
+      if (!confirm("Excluir este gasto?")) return;
+      state.despesas = state.despesas.filter(d => d.id !== id);
+      persistirEstado();
+      mostrarToast("Gasto excluído");
+      renderizarTelaPrincipal();
+    }
+
+    function renderFinanceiroHTML() {
+      const bolso = totalNoBolso();
+      const receber = totalParaReceber();
+      const atrasado = totalAtrasado();
+      const gastos = totalDespesas();
+      const lucroLiquido = bolso - gastos;
+      const f = state.filtros.finAba;
+      const busca = (state.filtros.finBusca || "").toLowerCase();
+      const metodo = state.filtros.finMetodo;
+
+      let servicosFiltrados = [];
+      if (f === "faltaReceber") {
+        servicosFiltrados = state.servicos.filter(s => s.status !== "combinando" && valorFaltaDoServico(s) > 0);
+      } else if (f === "atrasados") {
+        servicosFiltrados = state.servicos.filter(s => s.status !== "combinando" && servicoTemAtraso(s));
+      } else if (f === "noBolso") {
+        servicosFiltrados = state.servicos.filter(s => s.status !== "combinando" && valorPagoDoServico(s) > 0);
+      }
+
+      servicosFiltrados = servicosFiltrados.filter(s => {
+        const cli = obterCliente(s.clienteId);
+        const bateBusca = !busca || cli.nome.toLowerCase().includes(busca) || s.tituloServico.toLowerCase().includes(busca);
+        const bateMetodo = metodo === "todos" || (s.metodoPagamento || "Pix") === metodo;
+        return bateBusca && bateMetodo;
+      });
+
+      const formCobrancaHTML = state.forms.mostrarFormCobrancaAvulsa ? `
+        <div class="accessible-card" style="border-color:var(--azul); display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:17px; font-weight:800;">Nova Cobrança / Parcelamento</span>
+            <button onclick="state.forms.mostrarFormCobrancaAvulsa=false; renderizarTelaPrincipal();" style="border:none; background:none; cursor:pointer;"><i data-lucide="x" style="width:18px; height:18px;"></i></button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <select class="clean-select" onchange="state.forms.cobClienteId=this.value">
+              ${state.clientes.map(c => `<option value="${c.id}" ${state.forms.cobClienteId===c.id?'selected':''}>${c.nome}</option>`).join("")}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição do Serviço</label>
+            <input class="clean-text-input" placeholder="Ex: Instalação de Ventilador" value="${state.forms.cobTitulo}" oninput="state.forms.cobTitulo=this.value" />
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Valor Total (R$)</label>
+              <input class="clean-text-input" type="number" placeholder="300" value="${state.forms.cobValor}" oninput="state.forms.cobValor=this.value" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parcelas</label>
+              <select class="clean-select" onchange="state.forms.cobParcelas=this.value">
+                <option value="1">1x À Vista</option>
+                <option value="2">2x Parcelado</option>
+                <option value="3">3x Parcelado</option>
+                <option value="4">4x Parcelado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Forma de Pagamento</label>
+            <select class="clean-select" onchange="state.forms.cobMetodo=this.value">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão">Cartão</option>
+            </select>
+          </div>
+
+          <button class="btn-physical btn-verde" onclick="salvarNovaCobrancaAvulsa()">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Salvar Cobrança</span>
+          </button>
+        </div>
+      ` : "";
+
+      const formDespesaHTML = state.forms.mostrarFormDespesa ? `
+        <div class="accessible-card" style="border-color:var(--vermelho); display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:17px; font-weight:800;">${state.forms.despesaEditandoId ? 'Editar Gasto' : 'Registrar Gasto / Material'}</span>
+            <button onclick="state.forms.mostrarFormDespesa=false; renderizarTelaPrincipal();" style="border:none; background:none; cursor:pointer;"><i data-lucide="x" style="width:18px; height:18px;"></i></button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">O que você comprou / gastou?</label>
+            <input class="clean-text-input" placeholder="Ex: Fios, Tinta, Gasolina..." value="${state.forms.despTitulo}" oninput="state.forms.despTitulo=this.value" />
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Valor (R$)</label>
+              <input class="clean-text-input" type="number" placeholder="120" value="${state.forms.despValor}" oninput="state.forms.despValor=this.value" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Categoria</label>
+              <select class="clean-select" onchange="state.forms.despCategoria=this.value">
+                <option value="Material" ${state.forms.despCategoria==='Material'?'selected':''}>Material</option>
+                <option value="Transporte" ${state.forms.despCategoria==='Transporte'?'selected':''}>Transporte</option>
+                <option value="Ferramenta" ${state.forms.despCategoria==='Ferramenta'?'selected':''}>Ferramenta</option>
+                <option value="Ajudante" ${state.forms.despCategoria==='Ajudante'?'selected':''}>Ajudante</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn-physical btn-vermelho" onclick="salvarNovaDespesa()">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Salvar Gasto</span>
+          </button>
+        </div>
+      ` : "";
+
+      let conteudoListaHTML = "";
+      if (f === "despesas") {
+        conteudoListaHTML = state.despesas.map(d => `
+          <div class="accessible-card" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="icon-badge" style="background:var(--vermelho-fundo); color:var(--vermelho);">
+                <i data-lucide="arrow-up-right" style="width:20px; height:20px;"></i>
+              </div>
+              <div>
+                <div style="font-size:16px; font-weight:800;">${d.titulo}</div>
+                <div style="font-size:13px; font-weight:700; color:var(--ink-secondary);">${d.categoria} • ${d.data}</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="font-size:18px; font-weight:800; color:var(--vermelho-escuro);">- ${formatarMoeda(d.valor)}</div>
+              <button onclick="abrirEdicaoDespesa('${d.id}')" style="border:none; background:var(--bg-app); padding:6px 9px; border-radius:8px; cursor:pointer;">
+                <i data-lucide="pencil" style="width:14px; height:14px; color:var(--ink-secondary);"></i>
+              </button>
+              <button onclick="excluirDespesa('${d.id}')" style="border:none; background:var(--vermelho-fundo); color:var(--vermelho); padding:6px 9px; border-radius:8px; cursor:pointer;">
+                <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+              </button>
+            </div>
+          </div>
+        `).join("");
+      } else {
+        conteudoListaHTML = servicosFiltrados.map(servico => {
+          const cli = obterCliente(servico.clienteId);
+          const jaPagou = valorPagoDoServico(servico);
+          const falta = valorFaltaDoServico(servico);
+          const temAtr = servicoTemAtraso(servico);
+          const qtdPagas = (servico.parcelas || []).filter(p => p.pago).length;
+          const qtdTotal = (servico.parcelas || []).length;
+          const corBordaCard = temAtr ? "var(--vermelho)" : (falta > 0 ? "var(--amarelo)" : "var(--verde)");
+
+          const linhasParcelas = (servico.parcelas || []).map(p => {
+            const iconeNome = p.pago ? "check-circle-2" : (p.atrasada ? "alert-circle" : "clock");
+            const corIcone = p.pago ? "var(--verde)" : (p.atrasada ? "var(--vermelho)" : "var(--amarelo-escuro)");
+            const bgLinha = p.pago ? "var(--verde-fundo)" : (p.atrasada ? "var(--vermelho-fundo)" : "var(--bg-app)");
+            const corVenc = p.atrasada ? "var(--vermelho-escuro)" : (p.pago ? "var(--verde-escuro)" : "var(--ink-secondary)");
+
+            return `
+              <div style="background:${bgLinha}; border:1.5px solid var(--border-subtle); border-radius:14px; padding:11px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:9px;">
+                  <i data-lucide="${iconeNome}" style="width:18px; height:18px; color:${corIcone};"></i>
+                  <div style="flex:1;">
+                    <div style="font-size:15px; font-weight:800;">${p.numero}ª de ${p.totalParcelas} • ${formatarMoeda(p.valor)}</div>
+                    <div style="font-size:12px; font-weight:700; color:${corVenc};">${p.vencimentoTexto}</div>
+                  </div>
+                  <button onclick="abrirModalEditarParcela('${servico.id}', '${p.id}')" style="border:none; background:#fff; border:1px solid #CBD5E1; color:var(--ink-secondary); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer;">
+                    Editar
+                  </button>
+                  ${p.pago ? `<span style="background:var(--verde); color:#fff; font-weight:800; font-size:11px; padding:3px 8px; border-radius:999px;">PAGO</span>` : ''}
+                </div>
+
+                ${!p.pago ? `
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn-physical btn-verde" style="padding:9px; font-size:14px; border-radius:12px;" onclick="receberParcelaIndividual('${servico.id}', '${p.id}')">
+                      <i data-lucide="check" style="width:16px; height:16px;"></i>
+                      <span>Recebi</span>
+                    </button>
+                    <button class="btn-physical ${p.atrasada ? 'btn-vermelho' : 'btn-amarelo'}" style="padding:9px; font-size:14px; border-radius:12px;" onclick="cobrarParcelaNoZap('${servico.id}', '${p.id}')">
+                      <i data-lucide="send" style="width:16px; height:16px;"></i>
+                      <span>Cobrar WhatsApp</span>
+                    </button>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join("");
+
+          return `
+            <div class="accessible-card" style="border-color:${corBordaCard}; display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="avatar-initials">${cli.iniciais}</div>
+                <div style="flex:1;">
+                  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <span style="font-size:18px; font-weight:800;">${cli.nome}</span>
+                    ${temAtr ? `<span style="background:var(--vermelho); color:#fff; font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px;">ATRASADO</span>` : ''}
+                  </div>
+                  <div style="font-size:13px; font-weight:700; color:var(--ink-secondary); margin-top:2px;">
+                    ${servico.tituloServico} • ${servico.metodoPagamento || 'Pix'}
+                  </div>
+                </div>
+                <button onclick="abrirModalEditarServico('${servico.id}')" style="border:none; background:var(--azul-fundo); color:var(--azul); padding:6px 10px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">
+                  Editar Serviço
+                </button>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div style="background:var(--verde-fundo); padding:9px 11px; border-radius:12px;">
+                  <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">Já Pagou</div>
+                  <div style="font-size:17px; font-weight:800; color:var(--verde-escuro);">${formatarMoeda(jaPagou)}</div>
+                </div>
+                <div style="background:${temAtr ? 'var(--vermelho-fundo)' : 'var(--amarelo-fundo)'}; padding:9px 11px; border-radius:12px;">
+                  <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">Falta Receber</div>
+                  <div style="font-size:17px; font-weight:800; color:${temAtr ? 'var(--vermelho-escuro)' : 'var(--amarelo-escuro)'};">${formatarMoeda(falta)}</div>
+                </div>
+              </div>
+
+              <div style="font-size:14px; font-weight:800;">Parcelas (${qtdPagas} de ${qtdTotal} pagas)</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                ${linhasParcelas}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-size:21px; font-weight:800;">Meu Dinheiro</div>
+            <div style="font-size:13px; font-weight:700; color:var(--ink-secondary);">Livre no bolso: <strong style="color:var(--verde-escuro);">${formatarMoeda(lucroLiquido)}</strong></div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button onclick="state.forms.mostrarFormCobrancaAvulsa=!state.forms.mostrarFormCobrancaAvulsa; state.forms.mostrarFormDespesa=false; renderizarTelaPrincipal();" style="border:none; background:var(--azul); color:#fff; padding:7px 10px; border-radius:11px; font-weight:800; font-size:12px; cursor:pointer;">+ Cobrança</button>
+            <button onclick="abrirEdicaoDespesa()" style="border:none; background:var(--vermelho-fundo); color:var(--vermelho-escuro); padding:7px 10px; border-radius:11px; font-weight:800; font-size:12px; cursor:pointer;">- Gasto</button>
+          </div>
+        </div>
+
+        ${formCobrancaHTML}
+        ${formDespesaHTML}
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+          <div onclick="mudarFiltroFinanceiro('noBolso')" style="cursor:pointer; background:var(--verde-fundo); border:2px solid var(--verde); border-radius:16px; padding:10px;">
+            <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">Já Recebi</div>
+            <div style="font-size:17px; font-weight:800; color:var(--verde-escuro); margin-top:2px;">${formatarMoeda(bolso)}</div>
+          </div>
+          <div onclick="mudarFiltroFinanceiro('faltaReceber')" style="cursor:pointer; background:var(--amarelo-fundo); border:2px solid var(--amarelo); border-radius:16px; padding:10px;">
+            <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">Na Rua</div>
+            <div style="font-size:17px; font-weight:800; color:var(--amarelo-escuro); margin-top:2px;">${formatarMoeda(receber)}</div>
+          </div>
+          <div onclick="mudarFiltroFinanceiro('atrasados')" style="cursor:pointer; background:var(--vermelho-fundo); border:2px solid var(--vermelho); border-radius:16px; padding:10px;">
+            <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">Atrasado</div>
+            <div style="font-size:17px; font-weight:800; color:var(--vermelho-escuro); margin-top:2px;">${formatarMoeda(atrasado)}</div>
+          </div>
+        </div>
+
+        <div class="crm-tabs">
+          <button class="crm-tab-btn" style="background:${f==='faltaReceber'?'var(--amarelo)':'#fff'}; color:${f==='faltaReceber'?'#fff':'var(--ink-primary)'};" onclick="mudarFiltroFinanceiro('faltaReceber')">
+            <i data-lucide="clock" style="width:16px; height:16px;"></i>
+            <div>Falta</div>
+          </button>
+          <button class="crm-tab-btn" style="background:${f==='atrasados'?'var(--vermelho)':'#fff'}; color:${f==='atrasados'?'#fff':'var(--ink-primary)'};" onclick="mudarFiltroFinanceiro('atrasados')">
+            <i data-lucide="alert-triangle" style="width:16px; height:16px;"></i>
+            <div>Atraso</div>
+          </button>
+          <button class="crm-tab-btn" style="background:${f==='noBolso'?'var(--verde)':'#fff'}; color:${f==='noBolso'?'#fff':'var(--ink-primary)'};" onclick="mudarFiltroFinanceiro('noBolso')">
+            <i data-lucide="check-circle-2" style="width:16px; height:16px;"></i>
+            <div>Recebi</div>
+          </button>
+          <button class="crm-tab-btn" style="background:${f==='despesas'?'var(--ink-primary)':'#fff'}; color:${f==='despesas'?'#fff':'var(--ink-primary)'};" onclick="mudarFiltroFinanceiro('despesas')">
+            <i data-lucide="receipt" style="width:16px; height:16px;"></i>
+            <div>Gastos</div>
+          </button>
+        </div>
+
+        ${f !== 'despesas' ? `
+          <div class="search-box">
+            <i data-lucide="search" style="width:18px; height:18px; color:var(--ink-secondary);"></i>
+            <input placeholder="Buscar cobrança por cliente..." value="${state.filtros.finBusca}" oninput="state.filtros.finBusca=this.value; persistirEstado(); renderizarTelaPrincipal();" />
+          </div>
+          <div class="filter-chips-row">
+            ${["todos", "Pix", "Dinheiro", "Cartão"].map(m => `
+              <button class="filter-chip ${metodo === m ? 'active' : ''}" onclick="state.filtros.finMetodo='${m}'; persistirEstado(); renderizarTelaPrincipal();">
+                ${m === 'todos' ? 'Todas Formas' : m}
+              </button>
+            `).join("")}
+          </div>
+        ` : ''}
+
+        ${conteudoListaHTML || `<div class="accessible-card" style="text-align:center; font-size:16px; font-weight:800; color:var(--ink-secondary);">Nenhum lançamento encontrado.</div>`}
+      `;
+    }
+
+    function abrirFormNovoCliente(clienteId = null) {
+      if (clienteId) {
+        const cli = obterCliente(clienteId);
+        state.forms.clienteEditandoId = cli.id;
+        state.forms.cliNome = cli.nome;
+        state.forms.cliBairro = cli.apelidoOuBairro;
+        state.forms.cliTelefone = cli.telefone;
+      } else {
+        state.forms.clienteEditandoId = null;
+        state.forms.cliNome = "";
+        state.forms.cliBairro = "";
+        state.forms.cliTelefone = "";
+      }
+      state.forms.mostrarFormCliente = true;
+      renderizarTelaPrincipal();
+    }
+
+    function salvarFormularioCliente() {
+      const nome = state.forms.cliNome.trim();
+      if (!nome) {
+        mostrarToast("Digite o nome do cliente");
+        return;
+      }
+      if (state.forms.clienteEditandoId) {
+        const cli = state.clientes.find(c => c.id === state.forms.clienteEditandoId);
+        if (cli) {
+          cli.nome = nome;
+          cli.apelidoOuBairro = state.forms.cliBairro.trim() || "Cliente Cadastrado";
+          cli.telefone = state.forms.cliTelefone.trim() || "(11) 99000-0000";
+          cli.iniciais = obterIniciais(nome);
+        }
+        mostrarToast("Cliente atualizado");
+      } else {
+        state.clientes.unshift({
+          id: "cli_" + Date.now(),
+          nome: nome,
+          apelidoOuBairro: state.forms.cliBairro.trim() || "Cliente Cadastrado",
+          telefone: state.forms.cliTelefone.trim() || "(11) 99000-0000",
+          iniciais: obterIniciais(nome)
+        });
+        mostrarToast("Novo cliente salvo");
+      }
+      state.forms.mostrarFormCliente = false;
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function excluirCliente(clienteId) {
+      if (!confirm("Excluir este cliente?")) return;
+      state.clientes = state.clientes.filter(c => c.id !== clienteId);
+      persistirEstado();
+      mostrarToast("Cliente excluído");
+      renderizarTelaPrincipal();
+    }
+
+    function clientePossuiPendencia(clienteId) {
+      return state.servicos.some(s => s.clienteId === clienteId && s.status !== "combinando" && valorFaltaDoServico(s) > 0);
+    }
+
+    function renderClientesHTML() {
+      const busca = (state.filtros.clientesBusca || "").toLowerCase();
+      const filtro = state.filtros.clientesFiltro;
+
+      const filtrados = state.clientes.filter(c => {
+        const bateBusca = !busca ||
+          c.nome.toLowerCase().includes(busca) ||
+          c.apelidoOuBairro.toLowerCase().includes(busca) ||
+          c.telefone.toLowerCase().includes(busca);
+        const temPend = clientePossuiPendencia(c.id);
+        if (filtro === "comPendencia" && !temPend) return false;
+        if (filtro === "emDia" && temPend) return false;
+        return bateBusca;
+      });
+
+      const formHTML = state.forms.mostrarFormCliente ? `
+        <div class="accessible-card" style="border-color:var(--azul); display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:18px; font-weight:800;">${state.forms.clienteEditandoId ? 'Editar Cliente' : 'Cadastrar Novo Cliente'}</span>
+            <button onclick="state.forms.mostrarFormCliente=false; renderizarTelaPrincipal();" style="border:none; background:none; cursor:pointer;"><i data-lucide="x" style="width:18px; height:18px;"></i></button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nome Completo ou Apelido</label>
+            <input class="clean-text-input" placeholder="Ex: Seu Joaquim da Padaria" value="${state.forms.cliNome}" oninput="state.forms.cliNome=this.value" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Endereço / Ponto de Referência</label>
+            <input class="clean-text-input" placeholder="Ex: Rua das Flores, Portão Branco" value="${state.forms.cliBairro}" oninput="state.forms.cliBairro=this.value" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">WhatsApp / Telefone</label>
+            <input class="clean-text-input" placeholder="(11) 99999-8888" value="${state.forms.cliTelefone}" oninput="state.forms.cliTelefone=this.value" />
+          </div>
+
+          <button class="btn-physical btn-verde" onclick="salvarFormularioCliente()">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Salvar Cliente</span>
+          </button>
+        </div>
+      ` : "";
+
+      const listaHTML = filtrados.map(c => {
+        const temPend = clientePossuiPendencia(c.id);
+        return `
+          <div class="accessible-card" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="avatar-initials">${c.iniciais}</div>
+              <div style="flex: 1;">
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                  <span style="font-size: 18px; font-weight: 800;">${c.nome}</span>
+                  <span style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px; background:${temPend?'var(--amarelo-fundo)':'var(--verde-fundo)'}; color:${temPend?'var(--amarelo-escuro)':'var(--verde-escuro)'};">
+                    ${temPend ? 'Falta Pagar' : 'Em Dia'}
+                  </span>
+                </div>
+                <div style="font-size: 14px; font-weight: 700; color: var(--ink-secondary);">${c.apelidoOuBairro}</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--azul); margin-top:2px;">${c.telefone}</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button onclick="abrirFormNovoCliente('${c.id}')" style="border:none; background:var(--bg-app); width:36px; height:36px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Editar Cliente">
+                  <i data-lucide="pencil" style="width:15px; height:15px; color:var(--ink-secondary);"></i>
+                </button>
+                <button onclick="excluirCliente('${c.id}')" style="border:none; background:var(--vermelho-fundo); color:var(--vermelho); width:36px; height:36px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir Cliente">
+                  <i data-lucide="trash-2" style="width:15px; height:15px;"></i>
+                </button>
+              </div>
+            </div>
+            <button class="btn-physical btn-verde" style="padding:11px 14px; font-size:15px;" onclick="abrirWizardParaCliente('${c.id}')">
+              <i data-lucide="file-plus-2" style="width:18px; height:18px;"></i>
+              <span>Fazer Orçamento para ${c.nome}</span>
+            </button>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size: 21px; font-weight: 800;">Meus Clientes</div>
+          <button class="btn-physical btn-azul" style="width:auto; padding:8px 12px; font-size:13px;" onclick="abrirFormNovoCliente()">
+            <i data-lucide="user-plus" style="width:15px; height:15px;"></i>
+            <span>Novo Cliente</span>
+          </button>
+        </div>
+
+        ${formHTML}
+
+        <div class="search-box">
+          <i data-lucide="search" style="width:18px; height:18px; color:var(--ink-secondary);"></i>
+          <input placeholder="Buscar por nome, bairro ou telefone..." value="${state.filtros.clientesBusca}" oninput="state.filtros.clientesBusca=this.value; persistirEstado(); renderizarTelaPrincipal();" />
+        </div>
+
+        <div class="filter-chips-row">
+          <button class="filter-chip ${filtro === 'todos' ? 'active' : ''}" onclick="state.filtros.clientesFiltro='todos'; persistirEstado(); renderizarTelaPrincipal();">Todos (${state.clientes.length})</button>
+          <button class="filter-chip ${filtro === 'comPendencia' ? 'active' : ''}" onclick="state.filtros.clientesFiltro='comPendencia'; persistirEstado(); renderizarTelaPrincipal();">Com Parcela Aberta</button>
+          <button class="filter-chip ${filtro === 'emDia' ? 'active' : ''}" onclick="state.filtros.clientesFiltro='emDia'; persistirEstado(); renderizarTelaPrincipal();">Em Dia</button>
+        </div>
+
+        ${listaHTML || `<div class="accessible-card" style="text-align:center; font-size:16px; font-weight:800; color:var(--ink-secondary);">Nenhum cliente encontrado.</div>`}
+      `;
+    }
+
+    let agendaEmEdicaoId = null;
+
+    function abrirModalEditarAgenda(servicoId) {
+      agendaEmEdicaoId = servicoId;
+      const s = state.servicos.find(x => x.id === servicoId);
+      if (!s) return;
+
+      document.getElementById("editarAgendaBody").innerHTML = `
+        <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:17px; font-weight:800;">Editar Compromisso da Agenda</div>
+
+          <div class="form-group">
+            <label class="form-label">Serviço / Título</label>
+            <input id="editAgTitulo" class="clean-text-input" value="${s.tituloServico}" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <select id="editAgCliente" class="clean-select">
+              ${state.clientes.map(c => `<option value="${c.id}" ${c.id === s.clienteId ? 'selected' : ''}>${c.nome}</option>`).join("")}
+            </select>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Dia</label>
+              <select id="editAgDia" class="clean-select">
+                <option value="HOJE" ${s.diaAgenda === 'HOJE' ? 'selected' : ''}>Hoje</option>
+                <option value="AMANHÃ" ${s.diaAgenda === 'AMANHÃ' ? 'selected' : ''}>Amanhã</option>
+                <option value="SEMANA" ${s.diaAgenda === 'SEMANA' ? 'selected' : ''}>Esta Semana</option>
+                <option value="PAGO" ${s.diaAgenda === 'PAGO' ? 'selected' : ''}>Finalizado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Horário</label>
+              <input id="editAgHora" class="clean-text-input" value="${s.horaAgenda || '09:00'}" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Valor Combinado (R$)</label>
+            <input id="editAgValor" class="clean-text-input" type="number" value="${s.valor}" />
+          </div>
+
+          <button class="btn-physical btn-verde" onclick="salvarEdicaoAgenda()">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Salvar Alterações na Agenda</span>
+          </button>
+
+          <button class="btn-physical btn-vermelho" onclick="excluirServico('${s.id}'); fecharModalEditarAgenda();">
+            <i data-lucide="trash-2" style="width:18px; height:18px;"></i>
+            <span>Remover da Agenda</span>
+          </button>
+        </div>
+      `;
+
+      document.getElementById("editarAgendaModal").classList.add("open");
+      atualizarIcones();
+    }
+
+    function fecharModalEditarAgenda() {
+      document.getElementById("editarAgendaModal").classList.remove("open");
+      agendaEmEdicaoId = null;
+      renderizarTelaPrincipal();
+    }
+
+    function salvarEdicaoAgenda() {
+      if (!agendaEmEdicaoId) return;
+      const s = state.servicos.find(x => x.id === agendaEmEdicaoId);
+      if (!s) return;
+
+      s.tituloServico = document.getElementById("editAgTitulo").value.trim() || s.tituloServico;
+      s.clienteId = document.getElementById("editAgCliente").value;
+      s.diaAgenda = document.getElementById("editAgDia").value;
+      s.horaAgenda = document.getElementById("editAgHora").value.trim() || "09:00";
+      s.valor = parseInt(document.getElementById("editAgValor").value || "0", 10);
+
+      persistirEstado();
+      mostrarToast("Agenda atualizada!");
+      fecharModalEditarAgenda();
+    }
+
+    function salvarNovoAgendamento() {
+      const titulo = state.forms.agTitulo.trim() || "Visita Técnica / Serviço";
+      const valor = parseInt(state.forms.agValor || "0", 10);
+      state.servicos.unshift({
+        id: "ag_" + Date.now(),
+        clienteId: state.forms.agClienteId,
+        tituloServico: titulo,
+        categoria: "Geral",
+        icone: "calendar",
+        valor: valor,
+        diaAgenda: state.forms.agDia,
+        horaAgenda: state.forms.agHora,
+        metodoPagamento: "Pix",
+        status: "fazendo",
+        temFotoAnexa: false,
+        observacao: "",
+        logs: [
+          { id: "log_" + Date.now(), dataHora: "Hoje", texto: `Agendado para ${state.forms.agDia} às ${state.forms.agHora}`, tipo: "avanco" }
+        ],
+        parcelas: [
+          { id: "p_ag_" + Date.now(), numero: 1, totalParcelas: 1, valor: valor, vencimentoTexto: state.forms.agDia, pago: false, atrasada: false }
+        ]
+      });
+      state.forms.mostrarFormAgenda = false;
+      state.forms.agTitulo = "";
+      persistirEstado();
+      mostrarToast("Compromisso agendado!");
+      renderizarTelaPrincipal();
+    }
+
+    function renderAgendaHTML() {
+      const filtro = state.filtros.agendaFiltro;
+      const pendentes = state.servicos.filter(s => {
+        if (s.status === "pago") return false;
+        if (filtro === "todos") return true;
+        return s.diaAgenda === filtro;
+      });
+
+      const formAgendaHTML = state.forms.mostrarFormAgenda ? `
+        <div class="accessible-card" style="border-color:var(--azul); display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:17px; font-weight:800;">Novo Agendamento</span>
+            <button onclick="state.forms.mostrarFormAgenda=false; renderizarTelaPrincipal();" style="border:none; background:none; cursor:pointer;"><i data-lucide="x" style="width:18px; height:18px;"></i></button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <select class="clean-select" onchange="state.forms.agClienteId=this.value">
+              ${state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join("")}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Qual serviço será feito?</label>
+            <input class="clean-text-input" placeholder="Ex: Pintura da Cozinha" value="${state.forms.agTitulo}" oninput="state.forms.agTitulo=this.value" />
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <div class="form-group">
+              <label class="form-label">Quando</label>
+              <select class="clean-select" onchange="state.forms.agDia=this.value">
+                <option value="HOJE">Hoje</option>
+                <option value="AMANHÃ">Amanhã</option>
+                <option value="SEMANA">Esta Semana</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Horário</label>
+              <input class="clean-text-input" value="${state.forms.agHora}" oninput="state.forms.agHora=this.value" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Valor (R$)</label>
+              <input class="clean-text-input" type="number" value="${state.forms.agValor}" oninput="state.forms.agValor=this.value" />
+            </div>
+          </div>
+
+          <button class="btn-physical btn-verde" onclick="salvarNovoAgendamento()">
+            <i data-lucide="check" style="width:18px; height:18px;"></i>
+            <span>Confirmar na Agenda</span>
+          </button>
+        </div>
+      ` : "";
+
+      const cards = pendentes.map(s => {
+        const cli = obterCliente(s.clienteId);
+        return `
+          <div class="accessible-card" style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 74px; height: 74px; border-radius: 16px; background: var(--azul); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-weight: 800; flex-shrink: 0;">
+              <span style="font-size: 11px; opacity:0.9;">${s.diaAgenda}</span>
+              <span style="font-size: 15px;">${s.horaAgenda || '09:00'}</span>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 18px; font-weight: 800;">${cli.nome}</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--ink-secondary);">${cli.apelidoOuBairro}</div>
+              <div style="display:flex; align-items:center; gap:6px; font-size: 14px; font-weight: 800; color: var(--azul); margin-top:2px;">
+                <i data-lucide="${s.icone || 'wrench'}" style="width:14px; height:14px;"></i>
+                <span>${s.tituloServico} • ${formatarMoeda(s.valor)}</span>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button onclick="abrirModalEditarAgenda('${s.id}')" style="border:none; background:var(--azul-fundo); color:var(--azul); width:36px; height:36px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Editar Agendamento">
+                <i data-lucide="pencil" style="width:16px; height:16px;"></i>
+              </button>
+              <button onclick="excluirCompromissoAgenda('${s.id}')" style="border:none; background:var(--vermelho-fundo); color:var(--vermelho); width:36px; height:36px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir da Agenda">
+                <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size: 21px; font-weight: 800;">Agenda de Serviços</div>
+          <button class="btn-physical btn-azul" style="width:auto; padding:8px 12px; font-size:13px;" onclick="state.forms.mostrarFormAgenda=!state.forms.mostrarFormAgenda; renderizarTelaPrincipal();">
+            <i data-lucide="calendar-plus" style="width:15px; height:15px;"></i>
+            <span>Agendar</span>
+          </button>
+        </div>
+
+        ${formAgendaHTML}
+
+        <div class="filter-chips-row">
+          <button class="filter-chip ${filtro === 'todos' ? 'active' : ''}" onclick="state.filtros.agendaFiltro='todos'; persistirEstado(); renderizarTelaPrincipal();">Todos</button>
+          <button class="filter-chip ${filtro === 'HOJE' ? 'active' : ''}" onclick="state.filtros.agendaFiltro='HOJE'; persistirEstado(); renderizarTelaPrincipal();">Hoje</button>
+          <button class="filter-chip ${filtro === 'AMANHÃ' ? 'active' : ''}" onclick="state.filtros.agendaFiltro='AMANHÃ'; persistirEstado(); renderizarTelaPrincipal();">Amanhã</button>
+          <button class="filter-chip ${filtro === 'SEMANA' ? 'active' : ''}" onclick="state.filtros.agendaFiltro='SEMANA'; persistirEstado(); renderizarTelaPrincipal();">Esta Semana</button>
+        </div>
+
+        ${cards || `<div class="accessible-card" style="text-align:center; font-size:16px; font-weight:800; color:var(--ink-secondary);">Nenhum serviço para este dia.</div>`}
+      `;
+    }
+
+    function copiarLinkMiniSite() {
+      const url = `http://localhost:8080/site.html`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).catch(() => {});
+      }
+      mostrarToast(`Link copiado: localhost:8080/site.html`);
+    }
+
+    function abrirFormObraPortfolio(id = null) {
+      if (id) {
+        const o = state.portfolioObras.find(x => x.id === id);
+        if (o) {
+          state.forms.portEditandoId = o.id;
+          state.forms.portTitulo = o.titulo;
+          state.forms.portCliente = o.bairro;
+          state.forms.portPrecoBase = o.precoBase;
+        }
+      } else {
+        state.forms.portEditandoId = null;
+        state.forms.portTitulo = "";
+        state.forms.portCliente = "";
+        state.forms.portPrecoBase = "";
+      }
+      state.forms.mostrarFormPortfolio = true;
+      renderizarTelaPrincipal();
+    }
+
+    function salvarObraPortfolio() {
+      const titulo = state.forms.portTitulo.trim();
+      if (!titulo) {
+        mostrarToast("Digite o título do serviço");
+        return;
+      }
+
+      if (state.forms.portEditandoId) {
+        const o = state.portfolioObras.find(x => x.id === state.forms.portEditandoId);
+        if (o) {
+          o.titulo = titulo;
+          o.bairro = state.forms.portCliente.trim() || "Cliente Verificado";
+          o.precoBase = state.forms.portPrecoBase.trim() || "Sob Consulta";
+        }
+        mostrarToast("Obra do portfólio atualizada!");
+      } else {
+        state.portfolioObras.unshift({
+          id: "pf_" + Date.now(),
+          titulo: titulo,
+          bairro: state.forms.portCliente.trim() || "Cliente Verificado",
+          tempoExecucao: "Garantia inclusa",
+          precoBase: state.forms.portPrecoBase.trim() || "Orçamento sem compromisso",
+          icone: "check-circle-2",
+          corFundo: `linear-gradient(135deg, ${state.empresa.corTema || '#2563EB'}, #0F172A)`
+        });
+        mostrarToast("Nova obra publicada no seu Mini Site!");
+      }
+
+      state.forms.portTitulo = "";
+      state.forms.portCliente = "";
+      state.forms.portPrecoBase = "";
+      state.forms.portEditandoId = null;
+      state.forms.mostrarFormPortfolio = false;
+      persistirEstado();
+      renderizarTelaPrincipal();
+    }
+
+    function removerObraPortfolio(id) {
+      if (!confirm("Excluir esta obra do portfólio?")) return;
+      state.portfolioObras = state.portfolioObras.filter(p => p.id !== id);
+      persistirEstado();
+      mostrarToast("Item removido do portfólio");
+      renderizarTelaPrincipal();
+    }
+
+    function renderMiniSiteBuilderHTML() {
+      const aba = state.forms.abaMiniSite;
+      const emp = state.empresa;
+
+      let subConteudoHTML = "";
+
+      if (aba === "configurar") {
+        subConteudoHTML = `
+          <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="font-size:17px; font-weight:800;">Dados da Sua Empresa no Site</div>
+
+            <div class="form-group">
+              <label class="form-label">Nome Comercial da Empresa / Profissional</label>
+              <input class="clean-text-input" value="${emp.nomeExibicao}" oninput="state.empresa.nomeExibicao=this.value; persistirEstado();" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Frase de Destaque (Slogan / Garantia)</label>
+              <input class="clean-text-input" value="${emp.slogan}" oninput="state.empresa.slogan=this.value; persistirEstado();" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Link em Localhost do Seu Site</label>
+              <div style="display:flex; align-items:center; background:var(--bg-app); border:2px solid #CBD5E1; border-radius:14px; padding:0 12px;">
+                <span style="font-size:13px; font-weight:800; color:var(--ink-secondary);">localhost:8080/site.html?emp=</span>
+                <input style="border:none; background:transparent; padding:12px 4px; font-size:15px; font-weight:800; color:var(--azul); outline:none; width:100%;" value="${emp.slugUrl}" oninput="state.empresa.slugUrl=this.value.toLowerCase().replace(/[^a-z0-9-]/g, ''); persistirEstado();" />
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div class="form-group">
+                <label class="form-label">WhatsApp de Atendimento</label>
+                <input class="clean-text-input" value="${emp.telefoneWhatsApp}" oninput="state.empresa.telefoneWhatsApp=this.value; persistirEstado();" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tempo de Experiência</label>
+                <input class="clean-text-input" value="${emp.anosExperiencia}" oninput="state.empresa.anosExperiencia=this.value; persistirEstado();" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Bairros / Região onde você atende</label>
+              <input class="clean-text-input" value="${emp.cidadeBairros}" oninput="state.empresa.cidadeBairros=this.value; persistirEstado();" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cor Principal do Seu Mini Site</label>
+              <div style="display:flex; gap:10px; margin-top:4px;">
+                ${[
+                  { cor: "#2563EB", nome: "Azul" },
+                  { cor: "#059669", nome: "Verde" },
+                  { cor: "#D97706", nome: "Laranja" },
+                  { cor: "#0F172A", nome: "Preto" }
+                ].map(t => `
+                  <button onclick="state.empresa.corTema='${t.cor}'; persistirEstado(); renderizarTelaPrincipal();"
+                          style="flex:1; height:42px; border-radius:12px; border:3px solid ${emp.corTema===t.cor?'#0F172A':'transparent'}; background:${t.cor}; color:#fff; font-weight:800; font-size:13px; cursor:pointer;">
+                    ${t.nome}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+
+            <button class="btn-physical btn-verde" onclick="persistirEstado(); mostrarToast('Configurações salvas e sincronizadas!');">
+              <i data-lucide="check" style="width:18px; height:18px;"></i>
+              <span>Salvar Alterações do Site</span>
+            </button>
+          </div>
+        `;
+      } else if (aba === "portfolio") {
+        subConteudoHTML = `
+          <button class="btn-physical btn-azul" onclick="abrirFormObraPortfolio()">
+            <i data-lucide="plus-circle" style="width:18px; height:18px;"></i>
+            <span>Adicionar Foto / Obra ao Portfólio</span>
+          </button>
+
+          ${state.forms.mostrarFormPortfolio ? `
+            <div class="accessible-card" style="border-color:var(--azul); display:flex; flex-direction:column; gap:12px;">
+              <div style="font-size:17px; font-weight:800;">${state.forms.portEditandoId ? 'Editar Obra' : 'Nova Obra no Portfólio'}</div>
+              <div class="form-group">
+                <label class="form-label">Título do Serviço Realizado</label>
+                <input class="clean-text-input" placeholder="Ex: Reforma de Banheiro Completa" value="${state.forms.portTitulo}" oninput="state.forms.portTitulo=this.value" />
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="form-group">
+                  <label class="form-label">Bairro / Condomínio</label>
+                  <input class="clean-text-input" placeholder="Ex: Jardim América" value="${state.forms.portCliente}" oninput="state.forms.portCliente=this.value" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Preço Médio (Opcional)</label>
+                  <input class="clean-text-input" placeholder="A partir de R$ 300" value="${state.forms.portPrecoBase}" oninput="state.forms.portPrecoBase=this.value" />
+                </div>
+              </div>
+              <button class="btn-physical btn-verde" onclick="salvarObraPortfolio()">
+                <i data-lucide="check" style="width:18px; height:18px;"></i>
+                <span>Publicar no Meu Site</span>
+              </button>
+            </div>
+          ` : ''}
+
+          ${state.portfolioObras.map(obra => `
+            <div class="portfolio-photo-card">
+              <div class="portfolio-img-cover" style="background:${obra.corFundo};">
+                <i data-lucide="${obra.icone || 'wrench'}" style="width:40px; height:40px; opacity:0.9;"></i>
+                <span style="position:absolute; bottom:10px; left:12px; background:rgba(0,0,0,0.45); padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800;">
+                  ${obra.tempoExecucao}
+                </span>
+                <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px;">
+                  <button onclick="abrirFormObraPortfolio('${obra.id}')" style="border:none; background:rgba(0,0,0,0.45); color:#fff; width:32px; height:32px; border-radius:999px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="pencil" style="width:14px; height:14px;"></i>
+                  </button>
+                  <button onclick="removerObraPortfolio('${obra.id}')" style="border:none; background:rgba(239,68,68,0.85); color:#fff; width:32px; height:32px; border-radius:999px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+                  </button>
+                </div>
+              </div>
+              <div style="padding:14px;">
+                <div style="font-size:16px; font-weight:800;">${obra.titulo}</div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px;">
+                  <span style="font-size:13px; font-weight:700; color:var(--ink-secondary);">${obra.bairro}</span>
+                  <span style="font-size:14px; font-weight:800; color:var(--verde-escuro);">${obra.precoBase}</span>
+                </div>
+              </div>
+            </div>
+          `).join("")}
+        `;
+      } else {
+        subConteudoHTML = `
+          <button class="btn-physical btn-azul" onclick="adicionarItemAoCatalogo()">
+            <i data-lucide="plus-circle" style="width:18px; height:18px;"></i>
+            <span>Adicionar Novo Serviço ao Catálogo</span>
+          </button>
+
+          <div class="accessible-card" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:17px; font-weight:800;">Serviços & Preços Base no Mini Site</div>
+              <span style="font-size:12px; font-weight:800; color:var(--ink-secondary); background:var(--bg-app); padding:3px 8px; border-radius:8px;">${state.catalogoServicos.length} serviços</span>
+            </div>
+            <div style="font-size:13px; font-weight:600; color:var(--ink-secondary);">Marque o que aparece no site, altere preços ou clique no lápis/lixeira para editar e excluir:</div>
+
+            ${state.catalogoServicos.map(cat => `
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:14px; background:var(--bg-app); border:1.5px solid var(--border-subtle); gap:8px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:14px; flex:1; overflow:hidden;">
+                  <input type="checkbox" ${cat.visivelNoSite ? 'checked' : ''} onchange="cat.visivelNoSite=this.checked; persistirEstado();" style="width:18px; height:18px; flex-shrink:0;" />
+                  <i data-lucide="${cat.icone || 'wrench'}" style="width:16px; height:16px; color:var(--azul); flex-shrink:0;"></i>
+                  <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cat.nomeCurto}</span>
+                </label>
+                
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                  <div style="display:flex; align-items:center; gap:2px;">
+                    <span style="font-size:12px; font-weight:800; color:var(--ink-secondary);">R$</span>
+                    <input type="number" value="${cat.valorSugerido}" oninput="cat.valorSugerido=parseInt(this.value||0,10); persistirEstado();" style="width:68px; padding:5px 6px; border-radius:8px; border:1.5px solid #CBD5E1; font-weight:800; font-size:13px; text-align:right;" />
+                  </div>
+                  <button onclick="abrirModalEditarCatalogo('${cat.id}')" style="border:none; background:#fff; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Editar Nome / Valor">
+                    <i data-lucide="pencil" style="width:14px; height:14px; color:var(--ink-secondary);"></i>
+                  </button>
+                  <button onclick="excluirItemDoCatalogo('${cat.id}')" style="border:none; background:var(--vermelho-fundo); color:var(--vermelho); width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir Serviço">
+                    <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+                  </button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-size:21px; font-weight:800;">Meu Mini Site</div>
+            <div style="font-size:13px; font-weight:700; color:var(--ink-secondary);">Seu portfólio em localhost:8080/site.html</div>
+          </div>
+          <a href="http://localhost:8080/site.html" target="_blank" class="btn-physical btn-escuro" style="width:auto; padding:8px 12px; font-size:13px; text-decoration:none;">
+            <i data-lucide="external-link" style="width:15px; height:15px;"></i>
+            <span>Ver em Localhost</span>
+          </a>
+        </div>
+
+        <div class="accessible-card" style="background:linear-gradient(135deg, ${emp.corTema || '#2563EB'}, #0F172A); color:#fff; border:none; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:11px; font-weight:800; letter-spacing:0.6px; background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:999px;">SITE DISPONÍVEL EM LOCALHOST</span>
+            <i data-lucide="globe" style="width:18px; height:18px;"></i>
+          </div>
+          <div style="font-size:19px; font-weight:800;">http://localhost:8080/site.html</div>
+          <div style="font-size:13px; opacity:0.9; font-weight:600;">Seus clientes podem pedir orçamento online e os pedidos caem direto no seu painel em tempo real.</div>
+          <div style="display:flex; gap:8px;">
+            <button onclick="copiarLinkMiniSite()" style="flex:1; border:none; background:#fff; color:#0F172A; padding:10px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+              <i data-lucide="copy" style="width:15px; height:15px;"></i>
+              <span>Copiar Link</span>
+            </button>
+            <a href="http://localhost:8080/site.html" target="_blank" style="flex:1; text-decoration:none; background:var(--verde); color:#fff; padding:10px; border-radius:12px; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; gap:6px;">
+              <i data-lucide="external-link" style="width:15px; height:15px;"></i>
+              <span>Abrir no Navegador</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="crm-tabs">
+          <button class="crm-tab-btn" style="background:${aba==='configurar'?'var(--azul)':'#fff'}; color:${aba==='configurar'?'#fff':'var(--ink-primary)'};" onclick="state.forms.abaMiniSite='configurar'; renderizarTelaPrincipal();">
+            <i data-lucide="sliders" style="width:16px; height:16px;"></i>
+            <div>Dados</div>
+          </button>
+          <button class="crm-tab-btn" style="background:${aba==='portfolio'?'var(--azul)':'#fff'}; color:${aba==='portfolio'?'#fff':'var(--ink-primary)'};" onclick="state.forms.abaMiniSite='portfolio'; renderizarTelaPrincipal();">
+            <i data-lucide="image" style="width:16px; height:16px;"></i>
+            <div>Portfólio (${state.portfolioObras.length})</div>
+          </button>
+          <button class="crm-tab-btn" style="background:${aba==='catalogo'?'var(--azul)':'#fff'}; color:${aba==='catalogo'?'#fff':'var(--ink-primary)'};" onclick="state.forms.abaMiniSite='catalogo'; renderizarTelaPrincipal();">
+            <i data-lucide="list-checks" style="width:16px; height:16px;"></i>
+            <div>Preços</div>
+          </button>
+        </div>
+
+        ${subConteudoHTML}
+      `;
+    }
+
+    function abrirMiniSitePublico() {
+      window.open("http://localhost:8080/site.html", "_blank");
+    }
+
+    function fecharMiniSitePublico() {
+      document.getElementById("publicSiteModal").classList.remove("open");
+    }
+
+    function abrirWizard(tipo) {
+      state.wizard = {
+        aberto: true,
+        tipo: tipo,
+        passo: 1,
+        servicoExistenteId: null,
+        clienteSelecionadoId: state.clientes[0] ? state.clientes[0].id : null,
+        catalogoSelecionadoId: state.catalogoServicos[0].id,
+        descricao: "",
+        valorString: "300",
+        qtdParcelas: 1,
+        metodoPagamento: "Pix",
+        temFotoAnexa: false,
+        mostrarFormNovoCliente: false
+      };
+      document.getElementById("wizardTitle").textContent = tipo === "orcamento" ? "Fazer Orçamento" : "Fazer Recibo";
+      document.getElementById("wizardModal").classList.add("open");
+      renderizarWizard();
+    }
+
+    function abrirWizardParaCliente(clienteId) {
+      abrirWizard("orcamento");
+      state.wizard.clienteSelecionadoId = clienteId;
+      state.wizard.passo = 2;
+      renderizarWizard();
+    }
+
+    function transformarEmReciboPDF(servicoId) {
+      const servico = state.servicos.find(s => s.id === servicoId);
+      if (!servico) return;
+
+      state.wizard = {
+        aberto: true,
+        tipo: "recibo",
+        passo: 3,
+        servicoExistenteId: servico.id,
+        clienteSelecionadoId: servico.clienteId,
+        catalogoSelecionadoId: state.catalogoServicos[0].id,
+        descricao: servico.observacao || servico.tituloServico,
+        valorString: String(servico.valor),
+        qtdParcelas: (servico.parcelas || []).length || 1,
+        metodoPagamento: servico.metodoPagamento || "Pix",
+        temFotoAnexa: servico.temFotoAnexa
+      };
+      document.getElementById("wizardTitle").textContent = "Recibo Pronto";
+      document.getElementById("wizardModal").classList.add("open");
+      renderizarWizard();
+    }
+
+    function fecharWizard() {
+      document.getElementById("wizardModal").classList.remove("open");
+    }
+
+    function irParaPasso(numero) {
+      state.wizard.passo = numero;
+      renderizarWizard();
+    }
+
+    function tocarTeclaCalculadora(tecla) {
+      let atual = state.wizard.valorString;
+      if (tecla === "⌫") {
+        state.wizard.valorString = atual.slice(0, -1);
+      } else {
+        if (atual === "0" || atual === "") {
+          state.wizard.valorString = tecla === "00" ? "0" : tecla;
+        } else if (atual.length < 6) {
+          state.wizard.valorString += tecla;
+        }
+      }
+      renderizarWizard();
+    }
+
+
+    function alternarFormRapidoClienteWizard() {
+      if (!state.wizard) return;
+      state.wizard.mostrarFormNovoCliente = !state.wizard.mostrarFormNovoCliente;
+      renderizarWizard();
+    }
+
+    function salvarClienteRapidoNoWizard() {
+      const nomeInput = document.getElementById("wizNovoCliNome");
+      const telInput = document.getElementById("wizNovoCliTel");
+      const bairroInput = document.getElementById("wizNovoCliBairro");
+
+      const nome = (nomeInput ? nomeInput.value : "").trim();
+      const telefone = (telInput ? telInput.value : "").trim() || "(11) 99999-9999";
+      const bairro = (bairroInput ? bairroInput.value : "").trim() || "Local da Obra";
+
+      if (!nome) {
+        mostrarToast("Digite pelo menos o nome do cliente");
+        if (nomeInput) nomeInput.focus();
+        return;
+      }
+
+      const novoCliente = {
+        id: "cli_" + Date.now(),
+        nome: nome,
+        apelidoOuBairro: bairro,
+        telefone: telefone,
+        iniciais: obterIniciais(nome)
+      };
+
+      // Adiciona o cliente na lista global imediatamente
+      state.clientes.unshift(novoCliente);
+      // Seleciona o cliente recém criado no wizard
+      state.wizard.clienteSelecionadoId = novoCliente.id;
+      state.wizard.mostrarFormNovoCliente = false;
+      persistirEstado();
+      mostrarToast(`Cliente ${nome} adicionado!`);
+      // Avança direto para o passo 2 para o profissional não perder tempo!
+      irParaPasso(2);
+    }
+
+    function renderizarWizard() {
+      const passo = state.wizard.passo;
+
+      [1, 2, 3].forEach(n => {
+        const pill = document.getElementById("stepPill" + n);
+        pill.className = "step-pill";
+        if (n === passo) pill.classList.add("active");
+        else if (n < passo) pill.classList.add("done");
+      });
+
+      const body = document.getElementById("wizardBody");
+      const footer = document.getElementById("wizardFooter");
+
+      if (passo === 1) {
+        const mostrarNovo = state.wizard.mostrarFormNovoCliente;
+
+        const formRapidoHTML = mostrarNovo ? `
+          <div class="accessible-card" style="border: 2px solid var(--azul); background: #F8FAFC; display:flex; flex-direction:column; gap:12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(37,99,235,0.12);">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:34px; height:34px; border-radius:10px; background:var(--azul); color:#fff; display:flex; align-items:center; justify-content:center;">
+                  <i data-lucide="user-plus" style="width:18px; height:18px;"></i>
+                </div>
+                <span style="font-size:16px; font-weight:900; color:var(--ink-primary);">Adicionar Cliente na Hora</span>
+              </div>
+              <button onclick="alternarFormRapidoClienteWizard()" style="border:none; background:#E2E8F0; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                <i data-lucide="x" style="width:16px; height:16px;"></i>
+              </button>
+            </div>
+
+            <div>
+              <label class="form-label" style="font-size:13px; font-weight:800;">Nome Completo ou Apelido *</label>
+              <input id="wizNovoCliNome" class="clean-text-input" placeholder="Ex: Dona Maria do Sobrado" style="font-size:16px; font-weight:800;" autofocus />
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div>
+                <label class="form-label" style="font-size:12px; font-weight:700;">WhatsApp / Celular</label>
+                <input id="wizNovoCliTel" class="clean-text-input" placeholder="(11) 98888-7777" style="font-size:14px; font-weight:700;" />
+              </div>
+              <div>
+                <label class="form-label" style="font-size:12px; font-weight:700;">Bairro / Cidade</label>
+                <input id="wizNovoCliBairro" class="clean-text-input" placeholder="Ex: Centro / Rua 5" style="font-size:14px; font-weight:700;" />
+              </div>
+            </div>
+
+            <button class="btn-physical btn-verde" onclick="salvarClienteRapidoNoWizard()" style="padding:13px; font-size:16px; margin-top:2px;">
+              <i data-lucide="check" style="width:18px; height:18px;"></i>
+              <span>Salvar Cliente e Avançar</span>
+            </button>
+          </div>
+        ` : `
+          <!-- Botão Gigante e Acessível para Criar Cliente na Hora -->
+          <button class="btn-physical btn-azul" onclick="alternarFormRapidoClienteWizard()" style="padding:14px 16px; margin-bottom:12px; font-size:16px; justify-content:space-between; box-shadow: 0 4px 12px rgba(37,99,235,0.2);">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center;">
+                <i data-lucide="user-plus" style="width:20px; height:20px;"></i>
+              </div>
+              <span style="font-weight:900;">+ Novo Cliente na Hora</span>
+            </div>
+            <i data-lucide="chevron-right" style="width:18px; height:18px;"></i>
+          </button>
+        `;
+
+        const listaClientesHTML = state.clientes.map(c => {
+          const sel = c.id === state.wizard.clienteSelecionadoId;
+          return `
+            <div class="accessible-card" onclick="state.wizard.clienteSelecionadoId='${c.id}'; renderizarWizard();"
+                 style="cursor:pointer; display:flex; align-items:center; gap:14px; border-color:${sel ? 'var(--azul)' : 'var(--border-subtle)'}; background:${sel ? 'var(--azul-fundo)' : '#FFF'}; transition:all 0.15s ease;">
+              <div class="avatar-initials" style="background:${sel ? 'var(--azul)' : 'var(--azul-fundo)'}; color:${sel ? '#fff' : 'var(--azul)'}; border-color:${sel ? 'var(--azul)' : 'transparent'};">
+                ${c.iniciais}
+              </div>
+              <div style="flex:1; overflow:hidden;">
+                <div style="font-size:17px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.nome}</div>
+                <div style="font-size:13px; font-weight:700; color:var(--ink-secondary); margin-top:2px;">${c.apelidoOuBairro} • <span style="color:var(--azul);">${c.telefone}</span></div>
+              </div>
+              <i data-lucide="${sel ? 'check-circle-2' : 'circle'}" style="width:24px; height:24px; color:${sel ? 'var(--azul)' : '#CBD5E1'}; flex-shrink:0;"></i>
+            </div>
+          `;
+        }).join("");
+
+        body.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <div style="font-size:19px; font-weight:900;">1. Quem é o cliente?</div>
+            <span style="font-size:12px; font-weight:700; color:var(--ink-secondary);">Toque ou crie novo</span>
+          </div>
+
+          ${formRapidoHTML}
+
+          <div style="font-size:12px; font-weight:800; color:var(--ink-secondary); text-transform:uppercase; letter-spacing:0.4px; margin-top:4px; margin-bottom:4px;">
+            Ou selecione da lista:
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${listaClientesHTML}
+          </div>
+        `;
+
+        footer.innerHTML = `
+          <button class="btn-physical btn-verde" onclick="irParaPasso(2)" style="font-size:17px; padding:15px;">
+            <span style="flex:1; text-align:center; font-weight:900;">Continuar para o Serviço</span>
+            <i data-lucide="arrow-right" style="width:20px; height:20px;"></i>
+          </button>
+        `;
+      
+      } else if (passo === 2) {
+        const catalogoHTML = state.catalogoServicos.map(cat => {
+          const sel = cat.id === state.wizard.catalogoSelecionadoId;
+          return `
+            <button class="catalog-item-btn ${sel ? 'selected' : ''}" onclick="state.wizard.catalogoSelecionadoId='${cat.id}'; state.wizard.valorString='${cat.valorSugerido}'; renderizarWizard();">
+              <i data-lucide="${cat.icone || 'wrench'}" style="width:18px; height:18px;"></i>
+              <span>${cat.nomeCurto}</span>
+            </button>
+          `;
+        }).join("");
+
+        body.innerHTML = `
+          <div style="font-size:20px; font-weight:800;">2. O que vai ser feito?</div>
+
+          <div class="catalog-grid">${catalogoHTML}</div>
+
+          <div class="accessible-card">
+            <div style="font-size:14px; font-weight:800;">Descrição ou Observação</div>
+            <input class="clean-text-input" style="margin-top:8px;" value="${state.wizard.descricao}" placeholder="Ex: Pintura completa da sala..." oninput="state.wizard.descricao=this.value" />
+          </div>
+
+          <div class="accessible-card">
+            <div style="font-size:15px; font-weight:800;">Valor do Serviço</div>
+            <div class="pos-display">
+              <span class="pos-currency">R$</span>
+              <span class="pos-digits">${state.wizard.valorString || '0'}</span>
+            </div>
+
+            <div class="keypad-grid">
+              ${["1","2","3","4","5","6","7","8","9","00","0","⌫"].map(k => `
+                <button class="key-btn ${k === '⌫' ? 'backspace' : ''}" onclick="tocarTeclaCalculadora('${k}')">
+                  ${k === '⌫' ? '<i data-lucide="delete" style="width:20px; height:20px;"></i>' : k}
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="accessible-card" style="display:flex; flex-direction:column; gap:10px;">
+            <div style="font-size:15px; font-weight:800;">Parcelamento e Forma de Pagamento</div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+              ${[1, 2, 3].map(qtd => {
+                const ativo = (state.wizard.qtdParcelas || 1) === qtd;
+                const valTotal = parseInt(state.wizard.valorString || "0", 10);
+                const valCada = Math.round(valTotal / qtd);
+                return `
+                  <button onclick="state.wizard.qtdParcelas=${qtd}; renderizarWizard();"
+                          style="cursor:pointer; padding:9px 5px; border-radius:12px; border:2px solid ${ativo ? 'var(--azul-escuro)' : 'var(--border-subtle)'}; background:${ativo ? 'var(--azul)' : 'var(--bg-app)'}; color:${ativo ? '#fff' : 'var(--ink-primary)'}; font-weight:800;">
+                    <div style="font-size:14px;">${qtd === 1 ? 'À Vista' : qtd + ' Vezes'}</div>
+                    <div style="font-size:11px; opacity:0.9;">${qtd}x ${formatarMoeda(valCada)}</div>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+              ${["Pix", "Dinheiro", "Cartão"].map(m => {
+                const ativo = state.wizard.metodoPagamento === m;
+                return `
+                  <button onclick="state.wizard.metodoPagamento='${m}'; renderizarWizard();"
+                          style="cursor:pointer; padding:9px; border-radius:12px; border:2px solid ${ativo ? '#0F172A' : 'var(--border-subtle)'}; background:${ativo ? '#0F172A' : '#fff'}; color:${ativo ? '#fff' : 'var(--ink-primary)'}; font-weight:800; font-size:13px;">
+                    ${m}
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+
+        footer.innerHTML = `
+          <button class="btn-physical btn-branco" style="flex:1;" onclick="irParaPasso(1)">Voltar</button>
+          <button class="btn-physical btn-verde" style="flex:2;" onclick="irParaPasso(3)">
+            <span>Continuar</span>
+            <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+          </button>
+        `;
+      } else {
+        const cli = obterCliente(state.wizard.clienteSelecionadoId);
+        const cat = state.catalogoServicos.find(c => c.id === state.wizard.catalogoSelecionadoId) || state.catalogoServicos[0];
+        const valorNum = parseInt(state.wizard.valorString || "0", 10);
+        const ehOrcamento = state.wizard.tipo === "orcamento";
+        const corHeader = ehOrcamento ? "var(--amarelo)" : "var(--verde)";
+        const tituloPDF = ehOrcamento ? "ORÇAMENTO DE SERVIÇO" : "RECIBO DE PAGAMENTO";
+
+        body.innerHTML = `
+          <div style="font-size:20px; font-weight:800;">3. Tudo Pronto</div>
+
+          <div id="pdfPreviewElement" class="pdf-card">
+            <div class="pdf-header" style="background: ${corHeader};">
+              <div class="pdf-logo"><i data-lucide="wrench" style="width:24px; height:24px;"></i></div>
+              <div>
+                <div style="font-size:11px; font-weight:800; letter-spacing:0.6px; opacity:0.95;">${tituloPDF}</div>
+                <div style="font-size:19px; font-weight:800;">${state.empresa.nomeExibicao}</div>
+                <div style="font-size:12px; font-weight:700; opacity:0.92;">${state.empresa.telefoneWhatsApp} • localhost:8080/site.html</div>
+              </div>
+            </div>
+
+            <div class="pdf-body">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="avatar-initials">${cli.iniciais}</div>
+                <div style="flex:1;">
+                  <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">CLIENTE</div>
+                  <div style="font-size:18px; font-weight:800;">${cli.nome}</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--ink-secondary);">${cli.apelidoOuBairro}</div>
+                </div>
+              </div>
+
+              <hr style="border:none; border-top:1.5px solid var(--border-subtle);" />
+
+              <div>
+                <div style="font-size:11px; font-weight:800; color:var(--ink-secondary);">SERVIÇO COMBINADO</div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:17px; font-weight:800; margin-top:4px;">
+                  <i data-lucide="${cat.icone || 'wrench'}" style="width:18px; height:18px; color:var(--azul);"></i>
+                  <span>${cat.nomeCurto} (${state.wizard.metodoPagamento})</span>
+                </div>
+                ${state.wizard.descricao ? `<div style="margin-top:8px; background:var(--bg-app); padding:10px 12px; border-radius:12px; font-size:14px; font-weight:700; color:var(--ink-secondary);">${state.wizard.descricao}</div>` : ''}
+              </div>
+
+              <div class="pdf-total-box">
+                <div>
+                  <div style="font-size:12px; font-weight:800; color:var(--ink-secondary);">${ehOrcamento ? 'VALOR TOTAL' : 'VALOR RECEBIDO'}</div>
+                  <div style="font-size:12px; font-weight:800; color:var(--verde-escuro);">${state.wizard.qtdParcelas > 1 ? `Parcelado em ${state.wizard.qtdParcelas}x` : (ehOrcamento ? 'Validade: 15 dias' : 'Pagamento Confirmado')}</div>
+                </div>
+                <div style="font-size:26px; font-weight:800; color:var(--verde-escuro);">${formatarMoeda(valorNum)}</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-physical btn-verde" style="padding: 15px;" onclick="confirmarEnvioWhatsApp()">
+            <i data-lucide="send" style="width:20px; height:20px;"></i>
+            <div style="flex:1;">
+              <div style="font-size: 17px; font-weight: 800;">Mandar no WhatsApp Agora</div>
+              <div style="font-size: 12px; font-weight: 700; opacity: 0.92;">Envia o PDF pronto para ${cli.nome}</div>
+            </div>
+          </button>
+
+          <button class="btn-physical btn-branco" onclick="baixarPDFReal('${cli.nome}')">
+            <i data-lucide="download" style="width:18px; height:18px;"></i>
+            <span>Baixar Arquivo PDF no Aparelho</span>
+          </button>
+        `;
+
+        footer.innerHTML = `
+          <button class="btn-physical btn-branco" style="width:100%;" onclick="irParaPasso(2)">Voltar e Editar Valor</button>
+        `;
+      }
+
+      atualizarIcones();
+    }
+
+    function baixarPDFReal(nomeCliente) {
+      const elemento = document.getElementById("pdfPreviewElement");
+      if (!elemento || typeof html2pdf === "undefined") {
+        mostrarToast("PDF gerado com sucesso");
+        return;
+      }
+      html2pdf()
+        .set({
+          margin: 10,
+          filename: `Documento_${nomeCliente.replace(/\s+/g, "_")}.pdf`,
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        })
+        .from(elemento)
+        .save();
+      mostrarToast("Arquivo PDF baixado");
+    }
+
+    function confirmarEnvioWhatsApp() {
+      const valorNum = parseInt(state.wizard.valorString || "0", 10);
+      const qtdParc = state.wizard.qtdParcelas || 1;
+      const valorCada = Math.round(valorNum / qtdParc);
+      const cat = state.catalogoServicos.find(c => c.id === state.wizard.catalogoSelecionadoId) || state.catalogoServicos[0];
+
+      if (state.wizard.servicoExistenteId) {
+        const existente = state.servicos.find(s => s.id === state.wizard.servicoExistenteId);
+        if (existente) {
+          existente.status = "pago";
+          if (!existente.logs) existente.logs = [];
+          existente.logs.unshift({ id: "log_" + Date.now(), dataHora: "Hoje", texto: "Recibo emitido e enviado no WhatsApp", tipo: "avanco" });
+          (existente.parcelas || []).forEach(p => {
+            p.pago = true;
+            p.atrasada = false;
+            p.vencimentoTexto = "Pago";
+          });
+        }
+      } else {
+        const novasParcelas = Array.from({ length: qtdParc }, (_, i) => {
+          const num = i + 1;
+          const jaPaga = state.wizard.tipo === "recibo" || (qtdParc > 1 && num === 1);
+          return {
+            id: "parc_" + Date.now() + "_" + num,
+            numero: num,
+            totalParcelas: qtdParc,
+            valor: valorCada,
+            vencimentoTexto: jaPaga ? "Pago" : (num === 1 ? "Vence HOJE" : `${num}ª Parcela (Falta)`),
+            pago: jaPaga,
+            atrasada: false
+          };
+        });
+
+        state.servicos.unshift({
+          id: "srv_" + Date.now(),
+          clienteId: state.wizard.clienteSelecionadoId,
+          tituloServico: cat.nomeCurto,
+          categoria: cat.nomeCurto,
+          icone: cat.icone,
+          valor: valorNum,
+          diaAgenda: "HOJE",
+          horaAgenda: "15:00",
+          metodoPagamento: state.wizard.metodoPagamento,
+          status: state.wizard.tipo === "recibo" ? "pago" : "prontoCobrar",
+          temFotoAnexa: state.wizard.temFotoAnexa,
+          observacao: state.wizard.descricao,
+          logs: [
+            { id: "log_" + Date.now(), dataHora: "Hoje", texto: `${state.wizard.tipo === 'recibo' ? 'Recibo' : 'Orçamento'} criado e enviado no WhatsApp`, tipo: "nota" }
+          ],
+          parcelas: novasParcelas
+        });
+      }
+
+      fecharWizard();
+      persistirEstado();
+      renderizarTelaPrincipal();
+      mostrarToast("PDF enviado para o WhatsApp!");
+    }
+
+    persistirEstado();
+    renderizarTelaPrincipal();
+  </script>
+</body>
+</html>

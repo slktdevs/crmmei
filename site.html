@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Portfólio & Orçamento Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --ink: #0F172A;
+      --muted: #475569;
+      --subtle: #64748B;
+      --border: #E2E8F0;
+      --verde: #10B981;
+      --verde-escuro: #047857;
+      --verde-fundo: #ECFDF5;
+      --verde-borda: #A7F3D0;
+      --azul: #2563EB;
+      --azul-fundo: #EFF6FF;
+      --amarelo: #F59E0B;
+      --amarelo-fundo: #FFFBEB;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 70px;
+    }
+
+    /* Top bar de navegação limpa */
+    .top-bar {
+      background: #0F172A;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .top-link-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    .top-link-back:hover {
+      color: #fff;
+    }
+
+    .container {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 16px 40px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Card Hero Premium */
+    .hero-card {
+      border-radius: 24px;
+      padding: 30px 24px;
+      color: #fff;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.22);
+      color: #6EE7B7;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(110, 231, 183, 0.3);
+      margin-bottom: 10px;
+    }
+
+    .hero-header-flex {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .hero-stat-box {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 8px;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    /* Cards e Seções Gerais */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px 20px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Grid de Portfólio Responsivo */
+    .obra-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .obra-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .obra-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .obra-cover {
+      height: 120px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Tabela de Serviços */
+    .service-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      gap: 10px;
+      transition: background 0.15s;
+    }
+    .service-row:hover {
+      background: #F1F5F9;
+    }
+
+    /* Inputs e Botões */
+    .input-field, .select-field {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #CBD5E1;
+      font-size: 15px;
+      font-weight: 700;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus, .select-field:focus {
+      border-color: var(--verde);
+    }
+
+    .btn-verde {
+      background: var(--verde);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .btn-verde:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-whatsapp-flutuante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+      text-decoration: none;
+      z-index: 60;
+      transition: transform 0.15s ease;
+    }
+    .btn-whatsapp-flutuante:hover {
+      transform: scale(1.04);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: #0F172A;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ========================================================
+       RESPONSIVIDADE INTELIGENTE (MOBILE ATÉ DESKTOP)
+       ======================================================== */
+    @media (max-width: 580px) {
+      .container {
+        padding: 12px 12px 30px 12px;
+        gap: 16px;
+      }
+
+      .hero-card {
+        padding: 22px 18px;
+        border-radius: 20px;
+      }
+
+      .hero-header-flex {
+        gap: 12px;
+      }
+
+      .hero-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+      }
+      .hero-avatar svg {
+        width: 28px !important;
+        height: 28px !important;
+      }
+
+      .hero-title {
+        font-size: 22px !important;
+      }
+
+      .hero-stats-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+      }
+
+      .hero-stat-box {
+        padding: 10px 4px;
+      }
+      .hero-stat-box .stat-val {
+        font-size: 15px !important;
+      }
+      .hero-stat-box .stat-lbl {
+        font-size: 10px !important;
+      }
+
+      /* Portfólio em coluna única no celular para fotos grandes */
+      .obra-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .obra-cover {
+        height: 140px;
+      }
+
+      .section-card {
+        padding: 18px 14px;
+        border-radius: 18px;
+      }
+
+      .service-row {
+        padding: 10px 12px;
+      }
+      .service-row-title {
+        font-size: 15px !important;
+      }
+      .service-row-price {
+        font-size: 14px !important;
+      }
+
+      .btn-whatsapp-flutuante {
+        bottom: 16px;
+        right: 16px;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <a href="http://localhost:8080/index.html" class="top-link-back">
+      <i data-lucide="arrow-left" style="width:16px; height:16px;"></i>
+      <span>Voltar ao App</span>
+    </a>
+    <div style="font-size:12px; font-weight:800; color:#94A3B8; display:flex; align-items:center; gap:6px;">
+      <i data-lucide="globe" style="width:14px; height:14px; color:var(--verde);"></i>
+      <span id="urlHeader">localhost:8080/site.html</span>
+    </div>
+  </div>
+
+  <div class="container" id="siteRoot"></div>
+
+  <div id="toast" class="toast">
+    <i data-lucide="check-circle" style="width:18px; height:18px; color:var(--verde);"></i>
+    <span id="toastMsg">Mensagem</span>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "parceiro_autonomo_v3_state";
+
+    function carregarEstado() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return null;
+    }
+
+    function salvarEstado(st) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+      } catch (e) {}
+    }
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+
+    function renderSite() {
+      const st = carregarEstado() || {
+        empresa: {
+          nomeExibicao: "João Silva • Elétrica & Pintura",
+          slogan: "Serviço limpo, rápido e com garantia de 90 dias.",
+          telefoneWhatsApp: "(11) 98877-6655",
+          cidadeBairros: "Atendo Zona Sul, Centro e Região",
+          anosExperiencia: "12 anos de experiência",
+          slugUrl: "joao-reparos",
+          corTema: "#2563EB",
+          notaMedia: "4.9",
+          totalAvaliacoes: 48
+        },
+        catalogoServicos: [
+          { id: "c1", nomeCurto: "Pintura", icone: "paint-roller", valorSugerido: 300, visivelNoSite: true },
+          { id: "c2", nomeCurto: "Elétrica", icone: "zap", valorSugerido: 250, visivelNoSite: true },
+          { id: "c3", nomeCurto: "Alvenaria", icone: "hammer", valorSugerido: 450, visivelNoSite: true },
+          { id: "c4", nomeCurto: "Encanamento", icone: "droplet", valorSugerido: 180, visivelNoSite: true }
+        ],
+        portfolioObras: [
+          {
+            id: "pf1",
+            titulo: "Pintura Completa de Sala e Iluminação LED",
+            bairro: "Condomínio Flores",
+            tempoExecucao: "Feito em 2 dias",
+            precoBase: "A partir de R$ 450",
+            icone: "paint-roller",
+            corFundo: "linear-gradient(135deg, #2563EB, #1D4ED8)"
+          },
+          {
+            id: "pf2",
+            titulo: "Quadro Elétrico Novo + Disjuntores Padrão",
+            bairro: "Centro",
+            tempoExecucao: "Feito no mesmo dia",
+            precoBase: "A partir de R$ 350",
+            icone: "zap",
+            corFundo: "linear-gradient(135deg, #059669, #10B981)"
+          }
+        ],
+        depoimentosSite: [
+          { id: "dep1", cliente: "Dona Maria", texto: "Muito caprichoso! Deixou tudo limpo depois de pintar a sala.", nota: 5 },
+          { id: "dep2", cliente: "Seu Carlos", texto: "Resolveu a parte elétrica da padaria no mesmo dia. Recomendo!", nota: 5 }
+        ]
+      };
+
+      const emp = st.empresa;
+      document.title = `${emp.nomeExibicao} — Portfólio & Orçamento Online`;
+      document.getElementById("urlHeader").textContent = `localhost:8080/site.html?emp=${emp.slugUrl}`;
+
+      const servicosPublicos = (st.catalogoServicos || []).filter(s => s.visivelNoSite !== false);
+
+      document.getElementById("siteRoot").innerHTML = `
+        <!-- HERO CARD ELEGANTE -->
+        <div class="hero-card" style="background: linear-gradient(135deg, ${emp.corTema || '#2563EB'} 0%, #0F172A 100%);">
+          <div class="hero-header-flex">
+            <div class="hero-avatar">
+              <i data-lucide="wrench" style="width:34px; height:34px;"></i>
+            </div>
+            <div style="flex:1;">
+              <div class="hero-badge">
+                <i data-lucide="shield-check" style="width:14px; height:14px;"></i>
+                <span>PROFISSIONAL VERIFICADO</span>
+              </div>
+              <h1 class="hero-title" style="font-size:26px; font-weight:900; line-height:1.2; letter-spacing:-0.5px;">${emp.nomeExibicao}</h1>
+              <p style="font-size:15px; opacity:0.92; margin-top:5px; line-height:1.35;">${emp.slogan}</p>
+              <p style="font-size:13px; opacity:0.8; margin-top:5px;">📍 ${emp.cidadeBairros} • 📞 ${emp.telefoneWhatsApp}</p>
+            </div>
+          </div>
+
+          <!-- Estatísticas Rápidas -->
+          <div class="hero-stats-grid">
+            <div class="hero-stat-box">
+              <div class="stat-val" style="font-size:17px; font-weight:900;">★ ${emp.notaMedia || '4.9'}</div>
+              <div class="stat-lbl" style="font-size:11px; opacity:0.85;">${emp.totalAvaliacoes || 48} avaliações</div>
+            </div>
+            <div class="hero-stat-box">
+              <div class="stat-val" style="font-size:15px; font-weight:900;">${emp.anosExperiencia}</div>
+              <div class="stat-lbl" style="font-size:11px; opacity:0.85;">Experiência</div>
+            </div>
+            <div class="hero-stat-box">
+              <div class="stat-val" style="font-size:15px; font-weight:900;">Pix & Cartão</div>
+              <div class="stat-lbl" style="font-size:11px; opacity:0.85;">Facilitado</div>
+            </div>
+          </div>
+
+          <button class="btn-verde" style="margin-top:20px;" onclick="document.getElementById('pedidoBox').scrollIntoView({behavior:'smooth'})">
+            <i data-lucide="send" style="width:18px; height:18px;"></i>
+            <span>Pedir Orçamento Rápido Online</span>
+          </button>
+        </div>
+
+        <!-- PORTFÓLIO DE OBRAS -->
+        <div>
+          <div class="section-title">
+            <i data-lucide="images" style="width:20px; height:20px; color:${emp.corTema || '#2563EB'};"></i>
+            <span>Trabalhos Realizados</span>
+          </div>
+          <div class="obra-grid">
+            ${(st.portfolioObras || []).map(obra => `
+              <div class="obra-card">
+                <div class="obra-cover" style="background:${obra.corFundo || 'linear-gradient(135deg,#2563EB,#0F172A)'};">
+                  <i data-lucide="${obra.icone || 'wrench'}" style="width:38px; height:38px;"></i>
+                  <span style="position:absolute; bottom:8px; left:10px; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); padding:3px 9px; border-radius:999px; font-size:11px; font-weight:800;">
+                    ${obra.tempoExecucao}
+                  </span>
+                </div>
+                <div style="padding:14px; display:flex; flex-direction:column; justify-content:space-between; flex:1;">
+                  <div style="font-size:15px; font-weight:800; line-height:1.3;">${obra.titulo}</div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+                    <span style="font-size:12px; color:var(--subtle); font-weight:700;">${obra.bairro}</span>
+                    <span style="font-size:13px; color:var(--verde-escuro); font-weight:900;">${obra.precoBase}</span>
+                  </div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- TABELA DE SERVIÇOS & VALORES -->
+        <div class="section-card">
+          <div class="section-title">
+            <i data-lucide="tag" style="width:20px; height:20px; color:${emp.corTema || '#2563EB'};"></i>
+            <span>Serviços & Preços Base</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${servicosPublicos.map(s => `
+              <div class="service-row">
+                <div style="display:flex; align-items:center; gap:10px; font-weight:800;">
+                  <div style="width:34px; height:34px; border-radius:10px; background:var(--azul-fundo); color:var(--azul); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i data-lucide="${s.icone || 'wrench'}" style="width:18px; height:18px;"></i>
+                  </div>
+                  <span class="service-row-title" style="font-size:16px;">${s.nomeCurto}</span>
+                </div>
+                <span class="service-row-price" style="font-size:15px; font-weight:900; color:var(--verde-escuro);">A partir de ${formatarMoeda(s.valorSugerido)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- AVALIAÇÕES DE CLIENTES -->
+        <div class="section-card">
+          <div class="section-title">
+            <i data-lucide="star" style="width:20px; height:20px; color:var(--amarelo);"></i>
+            <span>Avaliações de Clientes</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${(st.depoimentosSite || []).map(d => `
+              <div style="padding:14px; background:var(--bg); border-radius:14px; border:1px solid var(--border);">
+                <div style="color:var(--amarelo); font-size:14px; font-weight:900;">★★★★★</div>
+                <div style="font-size:14px; font-weight:700; margin-top:4px; line-height:1.4;">"${d.texto}"</div>
+                <div style="font-size:12px; font-weight:800; color:var(--subtle); margin-top:6px;">— ${d.cliente}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- FORMULÁRIO DE PEDIDO DIRETO -->
+        <div id="pedidoBox" class="section-card" style="border: 2px solid var(--verde); box-shadow: 0 4px 18px rgba(16,185,129,0.12);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:36px; height:36px; border-radius:10px; background:var(--verde-fundo); color:var(--verde-escuro); display:flex; align-items:center; justify-content:center;">
+              <i data-lucide="calendar-check" style="width:20px; height:20px;"></i>
+            </div>
+            <div>
+              <h2 style="font-size:20px; font-weight:900;">Pedir Orçamento Online</h2>
+              <p style="font-size:13px; font-weight:600; color:var(--subtle); margin-top:1px;">
+                Cai direto no aplicativo do profissional para ele te responder:
+              </p>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+            <div>
+              <label style="font-size:13px; font-weight:800; color:var(--muted); display:block; margin-bottom:4px;">Seu Nome *</label>
+              <input id="siteNome" class="input-field" placeholder="Ex: Mariana Costa" />
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div>
+                <label style="font-size:13px; font-weight:800; color:var(--muted); display:block; margin-bottom:4px;">Seu WhatsApp *</label>
+                <input id="siteTel" class="input-field" placeholder="(11) 99999-0000" />
+              </div>
+              <div>
+                <label style="font-size:13px; font-weight:800; color:var(--muted); display:block; margin-bottom:4px;">Bairro / Cidade</label>
+                <input id="siteBairro" class="input-field" placeholder="Ex: Centro" />
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:13px; font-weight:800; color:var(--muted); display:block; margin-bottom:4px;">Tipo de Serviço</label>
+              <select id="siteCat" class="select-field">
+                ${servicosPublicos.map(s => `<option value="${s.id}">${s.nomeCurto} (Base ${formatarMoeda(s.valorSugerido)})</option>`).join("")}
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:13px; font-weight:800; color:var(--muted); display:block; margin-bottom:4px;">O que você precisa fazer?</label>
+              <input id="siteObs" class="input-field" placeholder="Ex: Preciso pintar a sala e trocar 3 tomadas" />
+            </div>
+
+            <button class="btn-verde" style="margin-top:6px;" onclick="enviarPedidoReal()">
+              <i data-lucide="send" style="width:18px; height:18px;"></i>
+              <span>Enviar Pedido de Orçamento Agora</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BOTÃO FLUTUANTE DE WHATSAPP -->
+        <a href="https://wa.me/55${(emp.telefoneWhatsApp || '').replace(/\D/g, '')}" target="_blank" class="btn-whatsapp-flutuante">
+          <i data-lucide="message-circle" style="width:20px; height:20px;"></i>
+          <span>Falar no WhatsApp</span>
+        </a>
+      `;
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function enviarPedidoReal() {
+      const st = carregarEstado();
+      if (!st) {
+        alert("Abra primeiro o painel principal em index.html!");
+        return;
+      }
+      const nome = (document.getElementById("siteNome").value || "").trim() || "Cliente do Site";
+      const tel = (document.getElementById("siteTel").value || "").trim() || "(11) 99888-0000";
+      const bairro = (document.getElementById("siteBairro").value || "").trim() || "Veio pelo Mini Site";
+      const catId = document.getElementById("siteCat").value;
+      const obs = (document.getElementById("siteObs").value || "").trim() || "Solicitado pelo Mini Site em localhost";
+
+      const cat = (st.catalogoServicos || []).find(c => c.id === catId) || st.catalogoServicos[0];
+      const partes = nome.split(/\s+/);
+      const iniciais = partes.length >= 2 ? (partes[0][0] + partes[1][0]).toUpperCase() : nome.slice(0, 2).toUpperCase();
+
+      const novoCli = {
+        id: "cli_site_" + Date.now(),
+        nome,
+        apelidoOuBairro: bairro,
+        telefone: tel,
+        iniciais
+      };
+      st.clientes.unshift(novoCli);
+
+      const agora = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      st.servicos.unshift({
+        id: "srv_site_" + Date.now(),
+        clienteId: novoCli.id,
+        tituloServico: cat.nomeCurto,
+        categoria: cat.nomeCurto,
+        icone: cat.icone,
+        valor: cat.valorSugerido,
+        diaAgenda: "HOJE",
+        horaAgenda: "16:00",
+        metodoPagamento: "Pix",
+        status: "combinando",
+        temFotoAnexa: false,
+        observacao: obs,
+        logs: [
+          { id: "log_" + Date.now(), dataHora: `Hoje, ${agora}`, texto: `Pedido recebido pelo Mini Site: "${obs}"`, tipo: "nota" }
+        ],
+        parcelas: [
+          { id: "p_site_" + Date.now(), numero: 1, totalParcelas: 1, valor: cat.valorSugerido, vencimentoTexto: "À Vista", pago: false, atrasada: false }
+        ]
+      });
+
+      salvarEstado(st);
+
+      const toast = document.getElementById("toast");
+      document.getElementById("toastMsg").textContent = "Pedido enviado! Já caiu no CRM do profissional.";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3500);
+
+      document.getElementById("siteNome").value = "";
+      document.getElementById("siteObs").value = "";
+    }
+
+    window.addEventListener("storage", renderSite);
+    renderSite();
+  </script>
+</body>
+</html>
