@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-upload:
     name: Build & Upload to Apple TestFlight
-    runs-on: macos-14
+    runs-on: macos-latest
 
     steps:
       - name: Checkout Repository
