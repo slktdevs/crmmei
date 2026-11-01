@@ -14,9 +14,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode 16.2
+      - name: Select Xcode 16
         run: |
-          sudo xcode-select -switch /Applications/Xcode_16.2.app
+          XCODE_PATH=$(ls -d /Applications/Xcode_16*.app /Applications/Xcode.app 2>/dev/null | head -n 1)
+          echo "Selecionando: $XCODE_PATH"
+          sudo xcode-select -switch "$XCODE_PATH"
           xcodebuild -version
 
       - name: Install XcodeGen
