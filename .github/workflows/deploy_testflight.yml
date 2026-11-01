@@ -59,7 +59,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -archivePath "$RUNNER_TEMP/CRMMEI.xcarchive" \
             MARKETING_VERSION="1.0" \
-            CURRENT_PROJECT_VERSION="1" \
+            CURRENT_PROJECT_VERSION="2" \
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="Y6V67KQ9X2" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
@@ -75,7 +75,7 @@ jobs:
 
           plutil -replace CFBundleIdentifier -string "br.com.unikprotege.notificacaopush" "$APP_PLIST"
           plutil -replace CFBundleShortVersionString -string "1.0" "$APP_PLIST"
-          plutil -replace CFBundleVersion -string "1" "$APP_PLIST"
+          plutil -replace CFBundleVersion -string "2" "$APP_PLIST"
           plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
           plutil -replace NSSpeechRecognitionUsageDescription -string "O aplicativo CRM MEI usa o reconhecimento de voz da Apple para transformar sua fala em dados dos orçamentos automaticamente." "$APP_PLIST"
           plutil -replace NSMicrophoneUsageDescription -string "O aplicativo CRM MEI usa o microfone para que você possa ditar clientes e valores por comando de voz." "$APP_PLIST"
