@@ -70,51 +70,67 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Barra Inferior Minimalista de Alto Contraste
+    // MARK: - Barra Inferior com Scroll Horizontal Inteligente (Otimizada para iPhone 11 e telas estreitas)
     private var barraNavegacaoInferiorAcessivel: some View {
-        HStack(spacing: 4) {
-            botaoAbaInferior(
-                aba: .inicio,
-                icone: "square.grid.2x2",
-                titulo: "Início"
-            )
-            
-            botaoAbaInferior(
-                aba: .servicos,
-                icone: "briefcase",
-                titulo: "Serviços"
-            )
-            
-            botaoAbaInferior(
-                aba: .dinheiro,
-                icone: "creditcard",
-                titulo: "Dinheiro"
-            )
-            
-            botaoAbaInferior(
-                aba: .clientes,
-                icone: "person.2",
-                titulo: "Clientes"
-            )
-            
-            botaoAbaInferior(
-                aba: .agenda,
-                icone: "calendar",
-                titulo: "Agenda"
-            )
-            
-            botaoAbaInferior(
-                aba: .minisite,
-                icone: "globe",
-                titulo: "Meu Site"
-            )
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    botaoAbaInferior(
+                        aba: .inicio,
+                        icone: "square.grid.2x2",
+                        titulo: "Início"
+                    )
+                    .id(AbaPrincipalApp.inicio)
+                    
+                    botaoAbaInferior(
+                        aba: .servicos,
+                        icone: "briefcase",
+                        titulo: "Serviços"
+                    )
+                    .id(AbaPrincipalApp.servicos)
+                    
+                    botaoAbaInferior(
+                        aba: .dinheiro,
+                        icone: "creditcard",
+                        titulo: "Dinheiro"
+                    )
+                    .id(AbaPrincipalApp.dinheiro)
+                    
+                    botaoAbaInferior(
+                        aba: .clientes,
+                        icone: "person.2",
+                        titulo: "Clientes"
+                    )
+                    .id(AbaPrincipalApp.clientes)
+                    
+                    botaoAbaInferior(
+                        aba: .agenda,
+                        icone: "calendar",
+                        titulo: "Agenda"
+                    )
+                    .id(AbaPrincipalApp.agenda)
+                    
+                    botaoAbaInferior(
+                        aba: .minisite,
+                        icone: "globe",
+                        titulo: "Meu Site"
+                    )
+                    .id(AbaPrincipalApp.minisite)
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
+                .padding(.bottom, 6)
+            }
+            .onChange(of: abaSelecionada) { novaAba in
+                withAnimation {
+                    proxy.scrollTo(novaAba, anchor: .center)
+                }
+            }
         }
-        .padding(.horizontal, 8)
-        .padding(.top, 8)
-        .padding(.bottom, 12)
         .background(
             Color.white
-                .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: -2)
+                .ignoresSafeArea(edges: .bottom)
+                .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: -3)
         )
     }
     
@@ -129,10 +145,12 @@ struct ContentView: View {
                 Image(systemName: icone)
                     .font(.system(size: 20, weight: .semibold))
                 Text(titulo)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
             .foregroundColor(ativo ? .white : .inkSecondary)
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
