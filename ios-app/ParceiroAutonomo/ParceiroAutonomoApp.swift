@@ -59,7 +59,7 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            barraNavegacaoInferiorAcessivel
+            barraNavegacaoInferiorFixa
         }
         .sheet(item: $wizardConfig) { config in
             QuoteReceiptWizardView(
@@ -70,91 +70,47 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Barra Inferior com Scroll Horizontal Inteligente (Otimizada para iPhone 11 e telas estreitas)
-    private var barraNavegacaoInferiorAcessivel: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    botaoAbaInferior(
-                        aba: .inicio,
-                        icone: "square.grid.2x2",
-                        titulo: "Início"
-                    )
-                    .id(AbaPrincipalApp.inicio)
-                    
-                    botaoAbaInferior(
-                        aba: .servicos,
-                        icone: "briefcase",
-                        titulo: "Serviços"
-                    )
-                    .id(AbaPrincipalApp.servicos)
-                    
-                    botaoAbaInferior(
-                        aba: .dinheiro,
-                        icone: "creditcard",
-                        titulo: "Dinheiro"
-                    )
-                    .id(AbaPrincipalApp.dinheiro)
-                    
-                    botaoAbaInferior(
-                        aba: .clientes,
-                        icone: "person.2",
-                        titulo: "Clientes"
-                    )
-                    .id(AbaPrincipalApp.clientes)
-                    
-                    botaoAbaInferior(
-                        aba: .agenda,
-                        icone: "calendar",
-                        titulo: "Agenda"
-                    )
-                    .id(AbaPrincipalApp.agenda)
-                    
-                    botaoAbaInferior(
-                        aba: .minisite,
-                        icone: "globe",
-                        titulo: "Meu Site"
-                    )
-                    .id(AbaPrincipalApp.minisite)
-                }
-                .padding(.horizontal, 12)
-                .padding(.top, 10)
-                .padding(.bottom, 6)
-            }
-            .onChange(of: abaSelecionada) { novaAba in
-                withAnimation {
-                    proxy.scrollTo(novaAba, anchor: .center)
-                }
-            }
+    // MARK: - Barra Inferior Fixa (Todos os 6 itens na mesma tela sem scroll)
+    private var barraNavegacaoInferiorFixa: some View {
+        HStack(spacing: 0) {
+            botaoAbaInferior(aba: .inicio, icone: "square.grid.2x2", titulo: "Início")
+            botaoAbaInferior(aba: .servicos, icone: "briefcase", titulo: "Serviços")
+            botaoAbaInferior(aba: .dinheiro, icone: "creditcard", titulo: "Dinheiro")
+            botaoAbaInferior(aba: .clientes, icone: "person.2", titulo: "Clientes")
+            botaoAbaInferior(aba: .agenda, icone: "calendar", titulo: "Agenda")
+            botaoAbaInferior(aba: .minisite, icone: "globe", titulo: "Meu Site")
         }
+        .padding(.horizontal, 4)
+        .padding(.top, 8)
+        .padding(.bottom, 6)
         .background(
             Color.white
                 .ignoresSafeArea(edges: .bottom)
-                .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: -3)
+                .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: -2)
         )
     }
     
     private func botaoAbaInferior(aba: AbaPrincipalApp, icone: String, titulo: String) -> some View {
         let ativo = abaSelecionada == aba
         return Button {
-            withAnimation(.spring(response: 0.22, dampingFraction: 0.8)) {
+            withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
                 abaSelecionada = aba
             }
         } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 Image(systemName: icone)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 19, weight: ativo ? .bold : .medium))
                 Text(titulo)
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .font(.system(size: 10, weight: ativo ? .bold : .medium, design: .rounded))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.85)
+                    .minimumScaleFactor(0.7)
             }
-            .foregroundColor(ativo ? .white : .inkSecondary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
+            .foregroundColor(ativo ? Color.semaforoAzul : Color.inkSecondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
             .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(ativo ? Color.semaforoAzul : Color.clear)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(ativo ? Color.semaforoAzul.opacity(0.12) : Color.clear)
             )
         }
         .buttonStyle(.plain)
