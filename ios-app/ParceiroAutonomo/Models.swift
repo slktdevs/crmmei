@@ -305,14 +305,50 @@ struct ServicoItem: Identifiable, Hashable, Codable {
 // MARK: - 4. Store Global com Dados Mockados Realistas
 @MainActor
 final class AppStore: ObservableObject {
-    @Published var nomeProfissional: String = "Seu João"
-    @Published var profissaoProfissional: String = "Elétrica, Pintura e Reparos"
-    @Published var telefoneProfissional: String = "(11) 98877-6655"
+    // MARK: - Estado de Autenticação em Produção
+    @Published var usuarioLogado: Bool = false {
+        didSet {
+            UserDefaults.standard.set(usuarioLogado, forKey: "crmmei_usuario_logado")
+        }
+    }
+    @Published var emailUsuario: String = "" {
+        didSet {
+            UserDefaults.standard.set(emailUsuario, forKey: "crmmei_email_usuario")
+        }
+    }
     
-    @Published var valorMesPassado: Double = 2850.00
+    @Published var nomeProfissional: String = "Meu Negócio" {
+        didSet {
+            UserDefaults.standard.set(nomeProfissional, forKey: "crmmei_nome_profissional")
+        }
+    }
+    @Published var profissaoProfissional: String = "Serviços Gerais" {
+        didSet {
+            UserDefaults.standard.set(profissaoProfissional, forKey: "crmmei_profissao_profissional")
+        }
+    }
+    @Published var telefoneProfissional: String = "" {
+        didSet {
+            UserDefaults.standard.set(telefoneProfissional, forKey: "crmmei_telefone_profissional")
+        }
+    }
     
-    @Published var clientes: [Cliente] = []
-    @Published var servicos: [ServicoItem] = []
+    @Published var valorMesPassado: Double = 0.0 {
+        didSet {
+            UserDefaults.standard.set(valorMesPassado, forKey: "crmmei_valor_mes_passado")
+        }
+    }
+    
+    @Published var clientes: [Cliente] = [] {
+        didSet {
+            salvarDadosLocais()
+        }
+    }
+    @Published var servicos: [ServicoItem] = [] {
+        didSet {
+            salvarDadosLocais()
+        }
+    }
     
     let catalogoServicos: [CatalogoItem] = [
         CatalogoItem(nomeCurto: "Pintura", iconeSistema: "paintbrush.pointed.fill", emoji: "🎨", cor: .semaforoAzul, valorSugerido: 300),
@@ -326,10 +362,94 @@ final class AppStore: ObservableObject {
     ]
     
     init() {
-        carregarDadosMockados()
+        carregarEstadoInicial()
     }
     
+    func carregarEstadoInicial() {
+        let logado = UserDefaults.standard.bool(forKey: "crmmei_usuario_logado")
+        self.usuarioLogado = logado
+        
+        if let nomeSalvo = UserDefaults.standard.string(forKey: "crmmei_nome_profissional"), !nomeSalvo.isEmpty {
+            self.nomeProfissional = nomeSalvo
+        }
+        if let profSalvo = UserDefaults.standard.string(forKey: "crmmei_profissao_profissional"), !profSalvo.isEmpty {
+            self.profissaoProfissional = profSalvo
+        }
+        if let telSalvo = UserDefaults.standard.string(forKey: "crmmei_telefone_profissional"), !telSalvo.isEmpty {
+            self.telefoneProfissional = telSalvo
+        }
+        if let emailSalvo = UserDefaults.standard.string(forKey: "crmmei_email_usuario"), !emailSalvo.isEmpty {
+            self.emailUsuario = emailSalvo
+        }
+        self.valorMesPassado = UserDefaults.standard.double(forKey: "crmmei_valor_mes_passado")
+        
+        // Carrega serviços e clientes do disco local (dados de produção do zero)
+        carregarDadosLocais()
+    }
+    
+    // MARK: - Autenticação e Gestão de Conta
+    func cadastrarNovoUsuario(nome: String, ramo: String, telefone: String, email: String) {
+        self.nomeProfissional = nome
+        self.profissaoProfissional = ramo
+        self.telefoneProfissional = telefone
+        self.emailUsuario = email
+        
+        // Zera todos os dados para começar 100% limpo em produção
+        self.clientes = []
+        self.servicos = []
+        self.valorMesPassado = 0.0
+        self.usuarioLogado = true
+        salvarDadosLocais()
+    }
+    
+    func autenticarUsuario(email: String) {
+        self.emailUsuario = email
+        if self.nomeProfissional == "Meu Negócio" && !email.isEmpty {
+            let prefixo = email.components(separatedBy: "@").first ?? "Empreendedor"
+            self.nomeProfissional = prefixo.capitalized
+        }
+        self.usuarioLogado = true
+    }
+    
+    func iniciarModoVisitanteProducao() {
+        self.usuarioLogado = true
+    }
+    
+    func encerrarSessao() {
+        self.usuarioLogado = false
+    }
+    
+    // MARK: - Persistência Segura de Dados do Zero
+    private func salvarDadosLocais() {
+        let encoder = JSONEncoder()
+        if let dadosClientes = try? encoder.encode(clientes) {
+            UserDefaults.standard.set(dadosClientes, forKey: "crmmei_clientes_producao")
+        }
+        if let dadosServicos = try? encoder.encode(servicos) {
+            UserDefaults.standard.set(dadosServicos, forKey: "crmmei_servicos_producao")
+        }
+    }
+    
+    private func carregarDadosLocais() {
+        let decoder = JSONDecoder()
+        if let dadosClientes = UserDefaults.standard.data(forKey: "crmmei_clientes_producao"),
+           let clientesCarregados = try? decoder.decode([Cliente].self, from: dadosClientes) {
+            self.clientes = clientesCarregados
+        } else {
+            self.clientes = []
+        }
+        
+        if let dadosServicos = UserDefaults.standard.data(forKey: "crmmei_servicos_producao"),
+           let servicosCarregados = try? decoder.decode([ServicoItem].self, from: dadosServicos) {
+            self.servicos = servicosCarregados
+        } else {
+            self.servicos = []
+        }
+    }
+    
+    // Caso o usuário queira carregar exemplos manualmente no futuro:
     func carregarDadosMockados() {
+
         let donaMaria = Cliente(
             nome: "Dona Maria",
             apelidoOuBairro: "Casa Verde - Portão Azul",
