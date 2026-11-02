@@ -87,10 +87,10 @@ extension View {
 
 // MARK: - 3. Modelos de Domínio (Zero Jargão)
 enum StatusServico: String, CaseIterable, Identifiable, Codable {
-    case combinando = "Combinando"     // Orçamentos enviados
-    case fazendo = "Fazendo"           // Serviços em andamento
+    case combinando = "Combinando"        // Orçamentos enviados
+    case fazendo = "Fazendo"              // Serviços em andamento
     case prontoCobrar = "Pronto / Cobrar" // Finalizados aguardando pagamento
-    case pago = "No Bolso"             // Pagos / Recibo emitido
+    case pago = "No Bolso"                // Pagos / Recibo emitido
     
     var id: String { rawValue }
     
@@ -158,7 +158,7 @@ struct Cliente: Identifiable, Hashable, Codable {
     var emojiAvatar: String
     var corAvatarHex: String
     
-    init(id: UUID = UUID(), nome: String, apelidoOuBairro: String, telefone: String, emojiAvatar: String, corAvatarHex: String = "2563EB") {
+    init(id: UUID = UUID(), nome: String, apelidoOuBairro: String, telefone: String, emojiAvatar: String = "", corAvatarHex: String = "2563EB") {
         self.id = id
         self.nome = nome
         self.apelidoOuBairro = apelidoOuBairro
@@ -172,7 +172,8 @@ struct Cliente: Identifiable, Hashable, Codable {
         if partes.count >= 2 {
             return "\(partes[0].prefix(1))\(partes[1].prefix(1))".uppercased()
         }
-        return String(nome.prefix(2)).uppercased()
+        let limpo = nome.trimmingCharacters(in: .whitespaces)
+        return limpo.isEmpty ? "CL" : String(limpo.prefix(2)).uppercased()
     }
 }
 
@@ -183,6 +184,39 @@ struct CatalogoItem: Identifiable, Hashable {
     let emoji: String
     let cor: Color
     let valorSugerido: Double
+}
+
+struct ObraPortfolioItem: Identifiable, Hashable, Codable {
+    let id: UUID
+    var titulo: String
+    var bairro: String
+    var tempoExecucao: String
+    var precoBase: String
+    var icone: String
+    
+    init(
+        id: UUID = UUID(),
+        titulo: String,
+        bairro: String,
+        tempoExecucao: String,
+        precoBase: String,
+        icone: String = "checkmark.seal"
+    ) {
+        self.id = id
+        self.titulo = titulo
+        self.bairro = bairro
+        self.tempoExecucao = tempoExecucao
+        self.precoBase = precoBase
+        self.icone = icone
+    }
+}
+
+struct ContaUsuarioMEI: Codable, Hashable {
+    var nome: String
+    var ramo: String
+    var telefone: String
+    var email: String
+    var senha: String
 }
 
 struct LogServicoItem: Identifiable, Hashable, Codable {
@@ -302,51 +336,124 @@ struct ServicoItem: Identifiable, Hashable, Codable {
     }
 }
 
-// MARK: - 4. Store Global com Dados Mockados Realistas
+// MARK: - Snapshot Codable Completo para Persistência Atômica em Disco
+struct EstadoCompletoCRM: Codable {
+    var usuarioLogado: Bool
+    var emailUsuario: String
+    var nomeProfissional: String
+    var profissaoProfissional: String
+    var telefoneProfissional: String
+    var valorMesPassado: Double
+    var sloganMiniSite: String
+    var slugMiniSite: String
+    var regiaoMiniSite: String
+    var anosExperienciaMiniSite: String
+    var clientes: [Cliente]
+    var servicos: [ServicoItem]
+    var obrasPortfolio: [ObraPortfolioItem]
+    var contasRegistradas: [ContaUsuarioMEI]
+}
+
+// MARK: - 4. Store Global de Produção com Persistência Dupla (Disco + UserDefaults)
 @MainActor
 final class AppStore: ObservableObject {
-    // MARK: - Estado de Autenticação em Produção
+    private var estaCarregando: Bool = false
+    
+    // MARK: - Estado de Autenticação Persistente
     @Published var usuarioLogado: Bool = false {
         didSet {
+            guard !estaCarregando else { return }
             UserDefaults.standard.set(usuarioLogado, forKey: "crmmei_usuario_logado")
+            salvarEstadoEmDisco()
         }
     }
     @Published var emailUsuario: String = "" {
         didSet {
+            guard !estaCarregando else { return }
             UserDefaults.standard.set(emailUsuario, forKey: "crmmei_email_usuario")
+            salvarEstadoEmDisco()
         }
     }
     
-    @Published var nomeProfissional: String = "Meu Negócio" {
+    @Published var nomeProfissional: String = "Meu Negócio MEI" {
         didSet {
+            guard !estaCarregando else { return }
             UserDefaults.standard.set(nomeProfissional, forKey: "crmmei_nome_profissional")
+            salvarEstadoEmDisco()
         }
     }
-    @Published var profissaoProfissional: String = "Serviços Gerais" {
+    @Published var profissaoProfissional: String = "Serviços e Orçamentos" {
         didSet {
+            guard !estaCarregando else { return }
             UserDefaults.standard.set(profissaoProfissional, forKey: "crmmei_profissao_profissional")
+            salvarEstadoEmDisco()
         }
     }
     @Published var telefoneProfissional: String = "" {
         didSet {
+            guard !estaCarregando else { return }
             UserDefaults.standard.set(telefoneProfissional, forKey: "crmmei_telefone_profissional")
+            salvarEstadoEmDisco()
         }
     }
     
     @Published var valorMesPassado: Double = 0.0 {
         didSet {
+            guard !estaCarregando else { return }
             UserDefaults.standard.set(valorMesPassado, forKey: "crmmei_valor_mes_passado")
+            salvarEstadoEmDisco()
+        }
+    }
+    
+    // MARK: - Dados do Mini Site Profissional
+    @Published var sloganMiniSite: String = "Serviço de qualidade, rápido e com garantia." {
+        didSet {
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
+        }
+    }
+    @Published var slugMiniSite: String = "meu-negocio" {
+        didSet {
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
+        }
+    }
+    @Published var regiaoMiniSite: String = "Atendimento em toda a região" {
+        didSet {
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
+        }
+    }
+    @Published var anosExperienciaMiniSite: String = "Profissional Verificado" {
+        didSet {
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
         }
     }
     
     @Published var clientes: [Cliente] = [] {
         didSet {
-            salvarDadosLocais()
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
         }
     }
     @Published var servicos: [ServicoItem] = [] {
         didSet {
-            salvarDadosLocais()
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
+        }
+    }
+    @Published var obrasPortfolio: [ObraPortfolioItem] = [] {
+        didSet {
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
+        }
+    }
+    
+    @Published var contasRegistradas: [ContaUsuarioMEI] = [] {
+        didSet {
+            guard !estaCarregando else { return }
+            salvarEstadoEmDisco()
         }
     }
     
@@ -361,13 +468,44 @@ final class AppStore: ObservableObject {
         CatalogoItem(nomeCurto: "Telhado", iconeSistema: "house.fill", emoji: "🏠", cor: .semaforoVermelho, valorSugerido: 380)
     ]
     
+    private var urlArquivoEstado: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return docs.appendingPathComponent("crmmei_production_state_v1.json")
+    }
+    
     init() {
         carregarEstadoInicial()
     }
     
     func carregarEstadoInicial() {
-        let logado = UserDefaults.standard.bool(forKey: "crmmei_usuario_logado")
-        self.usuarioLogado = logado
+        estaCarregando = true
+        defer { estaCarregando = false }
+        
+        let decoder = JSONDecoder()
+        
+        // 1. Tenta carregar do arquivo JSON atômico no DocumentDirectory
+        if let data = try? Data(contentsOf: urlArquivoEstado),
+           let estado = try? decoder.decode(EstadoCompletoCRM.self, from: data) {
+            self.usuarioLogado = estado.usuarioLogado || UserDefaults.standard.bool(forKey: "crmmei_usuario_logado")
+            self.emailUsuario = estado.emailUsuario
+            self.nomeProfissional = estado.nomeProfissional
+            self.profissaoProfissional = estado.profissaoProfissional
+            self.telefoneProfissional = estado.telefoneProfissional
+            self.valorMesPassado = estado.valorMesPassado
+            self.sloganMiniSite = estado.sloganMiniSite
+            self.slugMiniSite = estado.slugMiniSite
+            self.regiaoMiniSite = estado.regiaoMiniSite
+            self.anosExperienciaMiniSite = estado.anosExperienciaMiniSite
+            self.clientes = estado.clientes
+            self.servicos = estado.servicos
+            self.obrasPortfolio = estado.obrasPortfolio
+            self.contasRegistradas = estado.contasRegistradas
+            return
+        }
+        
+        // 2. Fallback para UserDefaults caso venha de versão anterior
+        self.usuarioLogado = UserDefaults.standard.bool(forKey: "crmmei_usuario_logado")
         
         if let nomeSalvo = UserDefaults.standard.string(forKey: "crmmei_nome_profissional"), !nomeSalvo.isEmpty {
             self.nomeProfissional = nomeSalvo
@@ -383,259 +521,145 @@ final class AppStore: ObservableObject {
         }
         self.valorMesPassado = UserDefaults.standard.double(forKey: "crmmei_valor_mes_passado")
         
-        // Carrega serviços e clientes do disco local (dados de produção do zero)
-        carregarDadosLocais()
-    }
-    
-    // MARK: - Autenticação e Gestão de Conta
-    func cadastrarNovoUsuario(nome: String, ramo: String, telefone: String, email: String) {
-        self.nomeProfissional = nome
-        self.profissaoProfissional = ramo
-        self.telefoneProfissional = telefone
-        self.emailUsuario = email
-        
-        // Zera todos os dados para começar 100% limpo em produção
-        self.clientes = []
-        self.servicos = []
-        self.valorMesPassado = 0.0
-        self.usuarioLogado = true
-        salvarDadosLocais()
-    }
-    
-    func autenticarUsuario(email: String) {
-        self.emailUsuario = email
-        if self.nomeProfissional == "Meu Negócio" && !email.isEmpty {
-            let prefixo = email.components(separatedBy: "@").first ?? "Empreendedor"
-            self.nomeProfissional = prefixo.capitalized
+        if let dadosClientes = UserDefaults.standard.data(forKey: "crmmei_clientes_producao"),
+           let clientesCarregados = try? decoder.decode([Cliente].self, from: dadosClientes) {
+            self.clientes = clientesCarregados
         }
+        if let dadosServicos = UserDefaults.standard.data(forKey: "crmmei_servicos_producao"),
+           let servicosCarregados = try? decoder.decode([ServicoItem].self, from: dadosServicos) {
+            self.servicos = servicosCarregados
+        }
+    }
+    
+    func salvarEstadoEmDisco() {
+        guard !estaCarregando else { return }
+        let estado = EstadoCompletoCRM(
+            usuarioLogado: usuarioLogado,
+            emailUsuario: emailUsuario,
+            nomeProfissional: nomeProfissional,
+            profissaoProfissional: profissaoProfissional,
+            telefoneProfissional: telefoneProfissional,
+            valorMesPassado: valorMesPassado,
+            sloganMiniSite: sloganMiniSite,
+            slugMiniSite: slugMiniSite,
+            regiaoMiniSite: regiaoMiniSite,
+            anosExperienciaMiniSite: anosExperienciaMiniSite,
+            clientes: clientes,
+            servicos: servicos,
+            obrasPortfolio: obrasPortfolio,
+            contasRegistradas: contasRegistradas
+        )
+        
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(estado) {
+            try? data.write(to: urlArquivoEstado, options: [.atomic])
+            UserDefaults.standard.set(data, forKey: "crmmei_estado_completo_v1")
+        }
+        UserDefaults.standard.set(usuarioLogado, forKey: "crmmei_usuario_logado")
+        UserDefaults.standard.synchronize()
+    }
+    
+    // MARK: - Autenticação e Gestão de Conta (Sessão Sempre Persistente)
+    func cadastrarNovoUsuario(nome: String, ramo: String, telefone: String, email: String, senha: String = "") {
+        let nomeLimpo = nome.trimmingCharacters(in: .whitespacesAndNewlines)
+        let ramoLimpo = ramo.trimmingCharacters(in: .whitespacesAndNewlines)
+        let telLimpo = telefone.trimmingCharacters(in: .whitespacesAndNewlines)
+        let emailLimpo = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        
+        estaCarregando = true
+        self.nomeProfissional = nomeLimpo.isEmpty ? "Meu Negócio MEI" : nomeLimpo
+        self.profissaoProfissional = ramoLimpo.isEmpty ? "Serviços Autônomos" : ramoLimpo
+        self.telefoneProfissional = telLimpo
+        self.emailUsuario = emailLimpo
+        
+        // Gera slug personalizado com base no nome
+        let slugGerado = nomeLimpo
+            .lowercased()
+            .folding(options: .diacriticInsensitive, locale: Locale(identifier: "pt_BR"))
+            .replacingOccurrences(of: " ", with: "-")
+            .filter { $0.isLetter || $0.isNumber || $0 == "-" }
+        if !slugGerado.isEmpty {
+            self.slugMiniSite = slugGerado
+        }
+        
+        // Salva na lista de contas registradas
+        let novaConta = ContaUsuarioMEI(
+            nome: self.nomeProfissional,
+            ramo: self.profissaoProfissional,
+            telefone: self.telefoneProfissional,
+            email: emailLimpo,
+            senha: senha
+        )
+        contasRegistradas.removeAll { $0.email.lowercased() == emailLimpo }
+        contasRegistradas.append(novaConta)
+        
         self.usuarioLogado = true
+        estaCarregando = false
+        salvarEstadoEmDisco()
+    }
+    
+    func autenticarUsuario(email: String, senha: String = "") -> Bool {
+        let loginLimpo = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !loginLimpo.isEmpty else { return false }
+        
+        estaCarregando = true
+        // Verifica se já existe conta registrada com este e-mail ou telefone
+        if let conta = contasRegistradas.first(where: {
+            $0.email.lowercased() == loginLimpo || $0.telefone == loginLimpo
+        }) {
+            if !conta.senha.isEmpty && !senha.isEmpty && conta.senha != senha {
+                estaCarregando = false
+                return false
+            }
+            self.nomeProfissional = conta.nome
+            self.profissaoProfissional = conta.ramo
+            self.telefoneProfissional = conta.telefone
+            self.emailUsuario = conta.email
+        } else {
+            self.emailUsuario = loginLimpo
+            if self.nomeProfissional == "Meu Negócio MEI" || self.nomeProfissional == "Meu Negócio" {
+                let prefixo = loginLimpo.components(separatedBy: "@").first ?? "Empreendedor"
+                self.nomeProfissional = prefixo.capitalized
+            }
+            let novaConta = ContaUsuarioMEI(
+                nome: self.nomeProfissional,
+                ramo: self.profissaoProfissional,
+                telefone: self.telefoneProfissional,
+                email: loginLimpo,
+                senha: senha
+            )
+            contasRegistradas.append(novaConta)
+        }
+        
+        self.usuarioLogado = true
+        estaCarregando = false
+        salvarEstadoEmDisco()
+        return true
     }
     
     func iniciarModoVisitanteProducao() {
         self.usuarioLogado = true
+        salvarEstadoEmDisco()
     }
     
     func encerrarSessao() {
         self.usuarioLogado = false
-    }
-    
-    // MARK: - Persistência Segura de Dados do Zero
-    private func salvarDadosLocais() {
-        let encoder = JSONEncoder()
-        if let dadosClientes = try? encoder.encode(clientes) {
-            UserDefaults.standard.set(dadosClientes, forKey: "crmmei_clientes_producao")
-        }
-        if let dadosServicos = try? encoder.encode(servicos) {
-            UserDefaults.standard.set(dadosServicos, forKey: "crmmei_servicos_producao")
-        }
-    }
-    
-    private func carregarDadosLocais() {
-        let decoder = JSONDecoder()
-        if let dadosClientes = UserDefaults.standard.data(forKey: "crmmei_clientes_producao"),
-           let clientesCarregados = try? decoder.decode([Cliente].self, from: dadosClientes) {
-            self.clientes = clientesCarregados
-        } else {
-            self.clientes = []
-        }
-        
-        if let dadosServicos = UserDefaults.standard.data(forKey: "crmmei_servicos_producao"),
-           let servicosCarregados = try? decoder.decode([ServicoItem].self, from: dadosServicos) {
-            self.servicos = servicosCarregados
-        } else {
-            self.servicos = []
-        }
-    }
-    
-    // Caso o usuário queira carregar exemplos manualmente no futuro:
-    func carregarDadosMockados() {
-
-        let donaMaria = Cliente(
-            nome: "Dona Maria",
-            apelidoOuBairro: "Casa Verde - Portão Azul",
-            telefone: "(11) 99123-4567",
-            emojiAvatar: "👵🏽"
-        )
-        let seuCarlos = Cliente(
-            nome: "Seu Carlos",
-            apelidoOuBairro: "Padaria da Esquina",
-            telefone: "(11) 99234-5678",
-            emojiAvatar: "👨🏻"
-        )
-        let donaNeide = Cliente(
-            nome: "Dona Neide",
-            apelidoOuBairro: "Sobrado Amarelo",
-            telefone: "(11) 99345-6789",
-            emojiAvatar: "👩🏾"
-        )
-        let oficinaRoberto = Cliente(
-            nome: "Roberto Mecânico",
-            apelidoOuBairro: "Perto do Mercado",
-            telefone: "(11) 99456-7890",
-            emojiAvatar: "🧔🏽"
-        )
-        let draPaula = Cliente(
-            nome: "Doutora Paula",
-            apelidoOuBairro: "Condomínio Flores",
-            telefone: "(11) 99567-8901",
-            emojiAvatar: "👩🏼‍⚕️"
-        )
-        
-        self.clientes = [donaMaria, seuCarlos, donaNeide, oficinaRoberto, draPaula]
-        
-        let hoje = Date()
-        let cal = Calendar.current
-        
-        self.servicos = [
-            // 1. Serviço Parcelado em 2x (1ª paga, 2ª atrasada!) -> Dona Neide
-            ServicoItem(
-                cliente: donaNeide,
-                tituloServico: "Conserto do Telhado",
-                iconeSistema: "house.fill",
-                emoji: "🏠",
-                valor: 400.00,
-                dataCriacao: cal.date(byAdding: .day, value: -15, to: hoje) ?? hoje,
-                dataAgendada: cal.date(byAdding: .day, value: -5, to: hoje) ?? hoje,
-                status: .prontoCobrar,
-                temFotoAnexa: true,
-                observacaoFalada: "Troca de telhas quebradas combinada em 2 vezes de 200 reais",
-                parcelas: [
-                    ParcelaItem(numero: 1, totalParcelas: 2, valor: 200.00, vencimentoTexto: "Entrada (Paga)", pago: true, atrasada: false),
-                    ParcelaItem(numero: 2, totalParcelas: 2, valor: 200.00, vencimentoTexto: "Atrasada há 4 dias", pago: false, atrasada: true)
-                ]
-            ),
-            
-            // 2. Serviço Parcelado em 3x (1ª paga, 2ª vence hoje, 3ª mês que vem) -> Seu Carlos
-            ServicoItem(
-                cliente: seuCarlos,
-                tituloServico: "Pintura da Fachada",
-                iconeSistema: "paintbrush.pointed.fill",
-                emoji: "🎨",
-                valor: 1200.00,
-                dataCriacao: cal.date(byAdding: .day, value: -10, to: hoje) ?? hoje,
-                dataAgendada: cal.date(byAdding: .day, value: -8, to: hoje) ?? hoje,
-                status: .prontoCobrar,
-                temFotoAnexa: true,
-                observacaoFalada: "Pintura completa da frente da padaria em 3 parcelas de 400 reais",
-                parcelas: [
-                    ParcelaItem(numero: 1, totalParcelas: 3, valor: 400.00, vencimentoTexto: "1ª Parcela (Paga)", pago: true, atrasada: false),
-                    ParcelaItem(numero: 2, totalParcelas: 3, valor: 400.00, vencimentoTexto: "Vence HOJE", pago: false, atrasada: false),
-                    ParcelaItem(numero: 3, totalParcelas: 3, valor: 400.00, vencimentoTexto: "Dia 15 (Mês que vem)", pago: false, atrasada: false)
-                ]
-            ),
-            
-            // 3. Serviço Parcelado em 2x (Entrada paga, falta 2ª parcela na entrega) -> Roberto Mecânico
-            ServicoItem(
-                cliente: oficinaRoberto,
-                tituloServico: "Tomadas Trifásicas",
-                iconeSistema: "bolt.fill",
-                emoji: "⚡",
-                valor: 500.00,
-                dataCriacao: cal.date(byAdding: .day, value: -2, to: hoje) ?? hoje,
-                dataAgendada: cal.date(byAdding: .day, value: 1, to: hoje) ?? hoje,
-                status: .fazendo,
-                temFotoAnexa: false,
-                observacaoFalada: "Metade de entrada e metade quando terminar",
-                parcelas: [
-                    ParcelaItem(numero: 1, totalParcelas: 2, valor: 250.00, vencimentoTexto: "Entrada (Paga)", pago: true, atrasada: false),
-                    ParcelaItem(numero: 2, totalParcelas: 2, valor: 250.00, vencimentoTexto: "Na Entrega (Amanhã)", pago: false, atrasada: false)
-                ]
-            ),
-            
-            // 4. Serviço À Vista Aguardando Pagamento -> Dona Maria
-            ServicoItem(
-                cliente: donaMaria,
-                tituloServico: "Pintura da Sala",
-                iconeSistema: "paintbrush.pointed.fill",
-                emoji: "🎨",
-                valor: 300.00,
-                dataCriacao: cal.date(byAdding: .day, value: -2, to: hoje) ?? hoje,
-                dataAgendada: hoje,
-                status: .prontoCobrar,
-                temFotoAnexa: true,
-                observacaoFalada: "Pintura da sala da Dona Maria trezentos reais",
-                parcelas: [
-                    ParcelaItem(numero: 1, totalParcelas: 1, valor: 300.00, vencimentoTexto: "Vence HOJE", pago: false, atrasada: false)
-                ]
-            ),
-            
-            // 5. Já Recebidos 100% (No Bolso)
-            ServicoItem(
-                cliente: donaMaria,
-                tituloServico: "Troca de Fiação",
-                iconeSistema: "bolt.fill",
-                emoji: "⚡",
-                valor: 250.00,
-                dataCriacao: cal.date(byAdding: .day, value: -5, to: hoje) ?? hoje,
-                dataAgendada: cal.date(byAdding: .day, value: -4, to: hoje) ?? hoje,
-                status: .pago,
-                temFotoAnexa: true,
-                observacaoFalada: "Troca de fiação do chuveiro e duas tomadas da cozinha",
-                parcelas: [
-                    ParcelaItem(numero: 1, totalParcelas: 1, valor: 250.00, vencimentoTexto: "Pago à Vista", pago: true, atrasada: false)
-                ]
-            ),
-            ServicoItem(
-                cliente: draPaula,
-                tituloServico: "Muro dos Fundos",
-                iconeSistema: "building.2.crop.circle.fill",
-                emoji: "🧱",
-                valor: 2000.00,
-                dataCriacao: cal.date(byAdding: .day, value: -14, to: hoje) ?? hoje,
-                dataAgendada: cal.date(byAdding: .day, value: -12, to: hoje) ?? hoje,
-                status: .pago,
-                temFotoAnexa: false,
-                observacaoFalada: "Reboco e acerto do muro dos fundos em 2 vezes pagas",
-                parcelas: [
-                    ParcelaItem(numero: 1, totalParcelas: 2, valor: 1000.00, vencimentoTexto: "1ª Parcela (Paga)", pago: true, atrasada: false),
-                    ParcelaItem(numero: 2, totalParcelas: 2, valor: 1000.00, vencimentoTexto: "2ª Parcela (Paga)", pago: true, atrasada: false)
-                ]
-            ),
-            
-            // 6. Orçamentos enviados (Combinando)
-            ServicoItem(
-                cliente: seuCarlos,
-                tituloServico: "Cano da Pia",
-                iconeSistema: "drop.fill",
-                emoji: "🚰",
-                valor: 180.00,
-                dataCriacao: hoje,
-                dataAgendada: cal.date(byAdding: .day, value: 2, to: hoje) ?? hoje,
-                status: .combinando,
-                temFotoAnexa: true,
-                observacaoFalada: "Tirar vazamento embaixo do balcão"
-            ),
-            ServicoItem(
-                cliente: draPaula,
-                tituloServico: "Podar Jardim",
-                iconeSistema: "leaf.fill",
-                emoji: "🌿",
-                valor: 350.00,
-                dataCriacao: hoje,
-                dataAgendada: cal.date(byAdding: .day, value: 3, to: hoje) ?? hoje,
-                status: .combinando,
-                temFotoAnexa: false,
-                observacaoFalada: "Cortar grama e podar cerca viva da frente"
-            )
-        ]
+        salvarEstadoEmDisco()
     }
     
     // MARK: - Cálculos Financeiros Claros (Por Parcelas!)
-    /// Soma todas as parcelas já pagas (mesmo que o serviço ainda tenha parcelas futuras)
     var totalNoBolso: Double {
         servicos
             .filter { $0.status != .combinando }
             .reduce(0) { $0 + $1.valorJaPago }
     }
     
-    /// Soma todas as parcelas em aberto de serviços em andamento ou finalizados
     var totalParaReceber: Double {
         servicos
             .filter { $0.status == .prontoCobrar || $0.status == .fazendo }
             .reduce(0) { $0 + $1.valorFaltaReceber }
     }
     
-    /// Soma apenas parcelas vencidas/atrasadas (Cor Vermelha Semafórica)
     var totalAtrasado: Double {
         servicos
             .filter { $0.status != .combinando }
@@ -665,6 +689,22 @@ final class AppStore: ObservableObject {
         if todasPagas {
             servicos[sIdx].status = .pago
         }
+        salvarEstadoEmDisco()
+    }
+    
+    /// Alterna o estado de atraso de uma parcela em aberto
+    func alternarAtrasoParcela(servicoId: UUID, parcelaId: UUID) {
+        guard let sIdx = servicos.firstIndex(where: { $0.id == servicoId }),
+              let pIdx = servicos[sIdx].parcelas.firstIndex(where: { $0.id == parcelaId }) else { return }
+        guard !servicos[sIdx].parcelas[pIdx].pago else { return }
+        
+        servicos[sIdx].parcelas[pIdx].atrasada.toggle()
+        if servicos[sIdx].parcelas[pIdx].atrasada {
+            servicos[sIdx].parcelas[pIdx].vencimentoTexto = "Parcela em Atraso"
+        } else {
+            servicos[sIdx].parcelas[pIdx].vencimentoTexto = "\(servicos[sIdx].parcelas[pIdx].numero)ª Parcela (Em aberto)"
+        }
+        salvarEstadoEmDisco()
     }
     
     func avancarStatus(_ servico: ServicoItem) {
@@ -679,6 +719,13 @@ final class AppStore: ObservableObject {
         case .pago:
             break
         }
+        salvarEstadoEmDisco()
+    }
+    
+    func atualizarDataServico(_ servico: ServicoItem, novaData: Date) {
+        guard let idx = servicos.firstIndex(where: { $0.id == servico.id }) else { return }
+        servicos[idx].dataAgendada = novaData
+        salvarEstadoEmDisco()
     }
     
     func marcarComoPago(_ servico: ServicoItem) {
@@ -686,16 +733,48 @@ final class AppStore: ObservableObject {
         for i in servicos[idx].parcelas.indices {
             servicos[idx].parcelas[i].pago = true
             servicos[idx].parcelas[i].atrasada = false
+            servicos[idx].parcelas[i].vencimentoTexto = "Pago ✅"
         }
         servicos[idx].status = .pago
+        salvarEstadoEmDisco()
     }
     
     func adicionarServico(_ novo: ServicoItem) {
-        servicos.insert(novo, at: 0)
+        if let idx = servicos.firstIndex(where: { $0.id == novo.id }) {
+            servicos[idx] = novo
+        } else {
+            servicos.insert(novo, at: 0)
+        }
+        salvarEstadoEmDisco()
+    }
+    
+    func removerServico(_ servico: ServicoItem) {
+        servicos.removeAll { $0.id == servico.id }
+        salvarEstadoEmDisco()
     }
     
     func adicionarCliente(_ cliente: Cliente) {
-        clientes.insert(cliente, at: 0)
+        if let idx = clientes.firstIndex(where: { $0.id == cliente.id }) {
+            clientes[idx] = cliente
+        } else {
+            clientes.insert(cliente, at: 0)
+        }
+        salvarEstadoEmDisco()
+    }
+    
+    func removerCliente(_ cliente: Cliente) {
+        clientes.removeAll { $0.id == cliente.id }
+        salvarEstadoEmDisco()
+    }
+    
+    func adicionarObraPortfolio(_ obra: ObraPortfolioItem) {
+        obrasPortfolio.insert(obra, at: 0)
+        salvarEstadoEmDisco()
+    }
+    
+    func removerObraPortfolio(_ obra: ObraPortfolioItem) {
+        obrasPortfolio.removeAll { $0.id == obra.id }
+        salvarEstadoEmDisco()
     }
     
     var resumoFaladoDoMes: String {
@@ -706,6 +785,31 @@ final class AppStore: ObservableObject {
             : "Atenção \(nomeProfissional), falta um pouquinho para alcançar o mês passado. Você tem \(receberFormatado) na rua para receber."
         
         return "Olá, \(nomeProfissional)! Aqui é o resumo do seu mês. No bolso, você já recebeu \(bolsoFormatado). Para receber na rua, você tem \(receberFormatado). \(comparacao)"
+    }
+    
+    // MARK: - Utilitário de Abertura Direta do WhatsApp
+    static func abrirWhatsApp(telefone: String, mensagem: String) {
+        let digitos = telefone.filter { $0.isNumber }
+        let ddiTelefone: String
+        if digitos.isEmpty {
+            ddiTelefone = ""
+        } else if digitos.hasPrefix("55") && digitos.count >= 12 {
+            ddiTelefone = digitos
+        } else {
+            ddiTelefone = "55" + digitos
+        }
+        
+        let msgEncoded = mensagem.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlStr = ddiTelefone.isEmpty
+            ? "https://wa.me/?text=\(msgEncoded)"
+            : "https://wa.me/\(ddiTelefone)?text=\(msgEncoded)"
+        
+        #if os(iOS)
+        UIPasteboard.general.string = mensagem
+        if let url = URL(string: urlStr) {
+            UIApplication.shared.open(url)
+        }
+        #endif
     }
 }
 
