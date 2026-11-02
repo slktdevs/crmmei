@@ -552,7 +552,7 @@ final class AppStore: ObservableObject {
         
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(estado) {
-            try? data.write(to: urlArquivoEstado, options: [.atomic])
+            try? data.write(to: urlArquivoEstado, options: .atomic)
             UserDefaults.standard.set(data, forKey: "crmmei_estado_completo_v1")
         }
         UserDefaults.standard.set(usuarioLogado, forKey: "crmmei_usuario_logado")
