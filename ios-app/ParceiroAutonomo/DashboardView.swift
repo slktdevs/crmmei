@@ -47,13 +47,27 @@ struct DashboardView: View {
                 Text("Olá, \(store.nomeProfissional)")
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundColor(.inkPrimary)
+                    .lineLimit(1)
                 
                 Text(store.profissaoProfissional)
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundColor(.inkSecondary)
+                    .lineLimit(1)
             }
             
             Spacer()
+            
+            // Botão de Logout / Trocar Perfil
+            Button {
+                store.encerrarSessao()
+            } label: {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.inkSecondary)
+                    .padding(10)
+                    .background(Color.black.opacity(0.05))
+                    .clipShape(Circle())
+            }
         }
         .padding(18)
         .accessibleCard()
