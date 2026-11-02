@@ -77,8 +77,8 @@ jobs:
 
           plutil -replace CFBundleIdentifier -string "br.com.unikprotege.notificacaopush" "$APP_PLIST"
           plutil -replace CFBundleShortVersionString -string "1.0" "$APP_PLIST"
-          plutil -replace CFBundleVersion -string "3" ""
-          plutil -replace UILaunchStoryboardName -string "LaunchScreen" ""
+          plutil -replace CFBundleVersion -string "3" "$APP_PLIST"
+          plutil -replace UILaunchStoryboardName -string "LaunchScreen" "$APP_PLIST"
           plutil -replace UIRequiresFullScreen -bool true "$APP_PLIST"
           plutil -replace NSSpeechRecognitionUsageDescription -string "O aplicativo CRM MEI usa o reconhecimento de voz da Apple para transformar sua fala em dados dos orçamentos automaticamente." "$APP_PLIST"
           plutil -replace NSMicrophoneUsageDescription -string "O aplicativo CRM MEI usa o microfone para que você possa ditar clientes e valores por comando de voz." "$APP_PLIST"
