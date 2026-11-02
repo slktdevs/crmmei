@@ -1,13 +1,5 @@
 import SwiftUI
 
-struct ObraPortfolioItem: Identifiable, Hashable {
-    let id = UUID()
-    var titulo: String
-    var bairro: String
-    var tempoExecucao: String
-    var precoBase: String
-    var icone: String
-}
 
 struct PortfolioMiniSiteView: View {
     @ObservedObject var store: AppStore
