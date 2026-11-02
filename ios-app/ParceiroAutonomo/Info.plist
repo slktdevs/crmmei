@@ -19,13 +19,13 @@
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>3</string>
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
-    <key>UIRequiresFullScreen</key>
-    <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
     <key>NSCameraUsageDescription</key>
     <string>O aplicativo CRM MEI precisa acessar a câmera para anexar fotos aos orçamentos e recibos.</string>
     <key>NSPhotoLibraryUsageDescription</key>
@@ -34,8 +34,6 @@
     <string>O aplicativo CRM MEI usa o microfone para que você possa ditar clientes e valores por comando de voz.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>O aplicativo CRM MEI usa o reconhecimento de voz da Apple para transformar sua fala em dados dos orçamentos automaticamente.</string>
-    <key>UILaunchScreen</key>
-    <dict/>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>arm64</string>
@@ -43,13 +41,6 @@
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
-    </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
 </dict>
 </plist>
