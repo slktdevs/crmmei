@@ -9,52 +9,74 @@ struct LoginView: View {
     @State private var telefoneInput: String = ""
     @State private var emailInput: String = ""
     @State private var senhaInput: String = ""
+    @State private var mostrarSenha: Bool = false
+    @State private var manterConectado: Bool = true
     
     @State private var erroMensagem: String? = nil
     @State private var animandoLogo: Bool = false
     
     var body: some View {
         ZStack {
-            // Fundo moderno com gradiente sutil
             Color.appBackground.ignoresSafeArea()
             
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    Spacer(minLength: 20)
+                VStack(spacing: 22) {
+                    Spacer(minLength: 14)
                     
-                    // MARK: - LOGOTIPO MODERNO CRM MEI
+                    // MARK: - 1. Logotipo Oficial CRM MEI
                     cabecalhoLogo
                     
-                    // MARK: - SELETOR DE MODO (ENTRAR / CRIAR CONTA)
+                    // MARK: - 2. Seletor de Modo (Entrar / Criar Conta)
                     seletorModo
                     
-                    // MARK: - FORMULÁRIO COM DESIGN CLAYMORPHISM TÁTIL
+                    // MARK: - 3. Formulário de Campos
                     formularioCampos
                     
-                    // MENSAGEM DE ERRO
+                    // MARK: - 4. Manter Conectado (Sempre Logado)
+                    HStack(spacing: 10) {
+                        Button {
+                            manterConectado.toggle()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: manterConectado ? "checkmark.square.fill" : "square")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(.semaforoVerde)
+                                Text("Manter conectado sempre que abrir o app")
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                                    .foregroundColor(.inkPrimary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    // Mensagem de Erro
                     if let erro = erroMensagem {
                         HStack(spacing: 8) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundColor(.semaforoVermelho)
                             Text(erro)
-                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundColor(.semaforoVermelho)
                         }
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, 12)
+                        .frame(maxWidth: .infinity)
                         .background(Color.semaforoVermelhoFundo)
-                        .cornerRadius(12)
+                        .cornerRadius(14)
+                        .padding(.horizontal, 22)
                     }
                     
-                    // MARK: - BOTÃO PRINCIPAL DE AÇÃO
+                    // MARK: - 5. Botão Principal de Ação
                     botaoAcaoPrincipal
                     
-                    // DIVISOR SUTIL
+                    // Divisor Sutil
                     HStack {
                         Rectangle()
                             .fill(Color.black.opacity(0.1))
                             .frame(height: 1)
-                        Text("OU")
+                        Text("ACESSO DIRETO")
                             .font(.system(size: 11, weight: .bold, design: .rounded))
                             .foregroundColor(.inkSecondary.opacity(0.6))
                             .padding(.horizontal, 8)
@@ -63,45 +85,50 @@ struct LoginView: View {
                             .frame(height: 1)
                     }
                     .padding(.horizontal, 30)
-                    .padding(.vertical, 4)
                     
-                    // MARK: - BOTÃO MODO DEMO / INÍCIO RÁPIDO
+                    // MARK: - 6. Botão Acesso Rápido Local
                     Button {
                         realizarEntradaRapida()
                     } label: {
                         HStack(spacing: 10) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 16, weight: .semibold))
-                            Text("Entrar como Visitante (Produção Local)")
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                            Image(systemName: "bolt.shield.fill")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundColor(.semaforoAzul)
+                            Text("Entrar Direto neste iPhone")
+                                .font(.system(size: 15, weight: .bold, design: .rounded))
+                                .foregroundColor(.inkPrimary)
                         }
-                        .foregroundColor(.inkSecondary)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 15)
                         .background(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3)
+                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 3)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(Color.black.opacity(0.08), lineWidth: 1.5)
+                                .stroke(Color.semaforoAzul.opacity(0.3), lineWidth: 1.5)
                         )
                     }
                     .padding(.horizontal, 22)
                     
-                    // RODAPÉ DE SEGURANÇA E PRIVACIDADE
+                    // Rodapé de Segurança
                     HStack(spacing: 6) {
                         Image(systemName: "lock.shield.fill")
-                            .font(.system(size: 12))
+                            .font(.system(size: 13))
                             .foregroundColor(.semaforoVerde)
-                        Text("Dados 100% seguros e criptografados no seu iPhone")
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundColor(.inkSecondary.opacity(0.7))
+                        Text("Sessão salva automaticamente • Dados 100% seguros")
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .foregroundColor(.inkSecondary.opacity(0.8))
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 4)
                     .padding(.bottom, 30)
                 }
+            }
+        }
+        .onAppear {
+            if !store.emailUsuario.isEmpty {
+                emailInput = store.emailUsuario
             }
         }
     }
@@ -110,8 +137,18 @@ struct LoginView: View {
     private var cabecalhoLogo: some View {
         VStack(spacing: 14) {
             ZStack {
-                // Glow azul de fundo
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.inkPrimary, Color(red: 26/255, green: 42/255, blue: 75/255)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 92, height: 92)
+                    .shadow(color: Color.semaforoAzul.opacity(0.35), radius: 14, x: 0, y: 8)
+                
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [Color.semaforoAzul, Color.semaforoAzulEscuro],
@@ -119,13 +156,14 @@ struct LoginView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: 88, height: 88)
-                    .shadow(color: Color.semaforoAzul.opacity(0.35), radius: 14, x: 0, y: 8)
+                    .frame(width: 66, height: 66)
                 
-                // Emblema Central: "M" estilizado geométrico
                 VStack(spacing: 2) {
-                    Image(systemName: "chart.line.uptrend.xyaxis.circle.fill")
-                        .font(.system(size: 42, weight: .bold))
+                    Circle()
+                        .fill(Color.semaforoVerde)
+                        .frame(width: 10, height: 10)
+                    Text("M")
+                        .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(.white)
                 }
             }
@@ -141,14 +179,13 @@ struct LoginView: View {
             VStack(spacing: 4) {
                 HStack(spacing: 6) {
                     Text("CRM")
-                        .font(.system(size: 26, weight: .black, design: .rounded))
+                        .font(.system(size: 28, weight: .black, design: .rounded))
                         .foregroundColor(.inkPrimary)
                     Text("MEI")
-                        .font(.system(size: 26, weight: .black, design: .rounded))
+                        .font(.system(size: 28, weight: .black, design: .rounded))
                         .foregroundColor(.semaforoAzul)
                     
-                    // Badge Pro
-                    Text("PRODUÇÃO")
+                    Text("ALPHA PRO")
                         .font(.system(size: 10, weight: .black, design: .rounded))
                         .foregroundColor(.semaforoVerdeEscuro)
                         .padding(.horizontal, 8)
@@ -157,8 +194,8 @@ struct LoginView: View {
                         .cornerRadius(6)
                 }
                 
-                Text("Gestão e Finanças para o Empreendedor Autônomo")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                Text("Orçamentos, Recibos, Clientes e Controle Financeiro")
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundColor(.inkSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -176,16 +213,16 @@ struct LoginView: View {
                 }
             } label: {
                 Text("Entrar na Conta")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(!modoCadastro ? .inkPrimary : .inkSecondary)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundColor(!modoCadastro ? .white : .inkSecondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
+                    .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(!modoCadastro ? Color.white : Color.clear)
-                            .shadow(color: !modoCadastro ? Color.black.opacity(0.06) : Color.clear, radius: 4, x: 0, y: 2)
+                            .fill(!modoCadastro ? Color.semaforoAzul : Color.clear)
                     )
             }
+            .buttonStyle(.plain)
             
             Button {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
@@ -193,43 +230,47 @@ struct LoginView: View {
                     erroMensagem = nil
                 }
             } label: {
-                Text("Novo Cadastro MEI")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(modoCadastro ? .inkPrimary : .inkSecondary)
+                Text("Criar Conta MEI")
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundColor(modoCadastro ? .white : .inkSecondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
+                    .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(modoCadastro ? Color.white : Color.clear)
-                            .shadow(color: modoCadastro ? Color.black.opacity(0.06) : Color.clear, radius: 4, x: 0, y: 2)
+                            .fill(modoCadastro ? Color.semaforoAzul : Color.clear)
                     )
             }
+            .buttonStyle(.plain)
         }
         .padding(4)
-        .background(Color.black.opacity(0.05))
+        .background(Color.white)
         .cornerRadius(16)
-        .padding(.horizontal, 24)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.black.opacity(0.08), lineWidth: 1.5)
+        )
+        .padding(.horizontal, 22)
     }
     
     // MARK: - 3. Formulário de Campos
     private var formularioCampos: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 12) {
             if modoCadastro {
                 campoInput(
                     icone: "person.crop.circle.fill",
-                    placeholder: "Seu Nome ou Nome do Negócio",
+                    placeholder: "Seu Nome ou Nome da Empresa",
                     texto: $nomeInput
                 )
                 
                 campoInput(
                     icone: "wrench.and.screwdriver.fill",
-                    placeholder: "Ramo (Ex: Elétrica, Manutenção, Beleza)",
+                    placeholder: "Profissão / Ramo (Ex: Eletricista, Pintor)",
                     texto: $ramoInput
                 )
                 
                 campoInput(
                     icone: "phone.fill",
-                    placeholder: "WhatsApp com DDD",
+                    placeholder: "Seu WhatsApp com DDD",
                     texto: $telefoneInput,
                     teclado: .phonePad
                 )
@@ -237,16 +278,46 @@ struct LoginView: View {
             
             campoInput(
                 icone: "envelope.fill",
-                placeholder: "Seu E-mail ou Telefone",
+                placeholder: "E-mail ou Telefone de Login",
                 texto: $emailInput,
                 teclado: .emailAddress
             )
             
-            campoInput(
-                icone: "lock.fill",
-                placeholder: "Sua Senha de Acesso",
-                texto: $senhaInput,
-                isSecure: true
+            // Campo de Senha com botão Mostrar/Ocultar
+            HStack(spacing: 12) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.semaforoAzul)
+                    .frame(width: 24)
+                
+                Group {
+                    if mostrarSenha {
+                        TextField("Sua Senha de Acesso", text: $senhaInput)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                    } else {
+                        SecureField("Sua Senha de Acesso", text: $senhaInput)
+                    }
+                }
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .foregroundColor(.inkPrimary)
+                
+                Button {
+                    mostrarSenha.toggle()
+                } label: {
+                    Image(systemName: mostrarSenha ? "eye.slash.fill" : "eye.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.inkSecondary)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 15)
+            .background(Color.white)
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.black.opacity(0.1), lineWidth: 1.5)
             )
         }
         .padding(.horizontal, 22)
@@ -256,35 +327,29 @@ struct LoginView: View {
         icone: String,
         placeholder: String,
         texto: Binding<String>,
-        isSecure: Bool = false,
         teclado: UIKeyboardType = .default
     ) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icone)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(.semaforoAzul)
                 .frame(width: 24)
             
-            if isSecure {
-                SecureField(placeholder, text: texto)
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
-            } else {
-                TextField(placeholder, text: texto)
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .keyboardType(teclado)
-                    .autocapitalization(teclado == .emailAddress ? .none : .words)
-                    .disableAutocorrection(true)
-            }
+            TextField(placeholder, text: texto)
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .foregroundColor(.inkPrimary)
+                .keyboardType(teclado)
+                .autocapitalization(teclado == .emailAddress ? .none : .words)
+                .disableAutocorrection(true)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.vertical, 15)
         .background(Color.white)
         .cornerRadius(16)
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.black.opacity(0.08), lineWidth: 1.5)
+                .stroke(Color.black.opacity(0.1), lineWidth: 1.5)
         )
-        .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 2)
     }
     
     // MARK: - 4. Botão de Ação Principal
@@ -293,62 +358,62 @@ struct LoginView: View {
             processarAcao()
         } label: {
             HStack(spacing: 10) {
-                Text(modoCadastro ? "Criar Minha Conta MEI" : "Acessar CRM MEI")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                Text(modoCadastro ? "Criar Conta e Entrar Agora" : "Entrar no CRM MEI")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
                 Image(systemName: "arrow.right.circle.fill")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 20, weight: .bold))
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(
-                LinearGradient(
-                    colors: [Color.semaforoAzul, Color.semaforoAzulEscuro],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .cornerRadius(18)
-            .shadow(color: Color.semaforoAzul.opacity(0.35), radius: 8, x: 0, y: 5)
         }
+        .buttonStyle(
+            PhysicalButtonStyle(
+                baseColor: .semaforoVerde,
+                shadowColor: .semaforoVerdeEscuro,
+                cornerRadius: 18
+            )
+        )
         .padding(.horizontal, 22)
     }
     
     // MARK: - Ações e Validação
     private func processarAcao() {
+        erroMensagem = nil
         if modoCadastro {
-            if nomeInput.trimmingCharacters(in: .whitespaces).isEmpty {
-                erroMensagem = "Por favor, digite seu nome ou negócio."
+            let nomeLimpo = nomeInput.trimmingCharacters(in: .whitespacesAndNewlines)
+            let emailLimpo = emailInput.trimmingCharacters(in: .whitespacesAndNewlines)
+            if nomeLimpo.isEmpty {
+                erroMensagem = "Digite seu nome ou o nome do seu negócio."
                 return
             }
-            if emailInput.trimmingCharacters(in: .whitespaces).isEmpty {
-                erroMensagem = "Por favor, digite seu e-mail."
-                return
-            }
-            if senhaInput.count < 4 {
-                erroMensagem = "A senha deve ter pelo menos 4 dígitos."
+            if emailLimpo.isEmpty && telefoneInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                erroMensagem = "Informe seu e-mail ou telefone de acesso."
                 return
             }
             
-            // Cadastra conta zerada
             store.cadastrarNovoUsuario(
-                nome: nomeInput,
-                ramo: ramoInput.isEmpty ? "Serviços Autônomos" : ramoInput,
-                telefone: telefoneInput.isEmpty ? "(11) 99999-9999" : telefoneInput,
-                email: emailInput
+                nome: nomeLimpo,
+                ramo: ramoInput.isEmpty ? "Serviços e Orçamentos" : ramoInput,
+                telefone: telefoneInput,
+                email: emailLimpo.isEmpty ? telefoneInput : emailLimpo,
+                senha: senhaInput
             )
         } else {
-            if emailInput.trimmingCharacters(in: .whitespaces).isEmpty || senhaInput.isEmpty {
-                erroMensagem = "Informe seu login e senha para entrar."
+            let loginLimpo = emailInput.trimmingCharacters(in: .whitespacesAndNewlines)
+            if loginLimpo.isEmpty {
+                erroMensagem = "Digite seu e-mail ou telefone para entrar."
                 return
             }
-            
-            // Login no sistema
-            store.autenticarUsuario(email: emailInput)
+            let sucesso = store.autenticarUsuario(email: loginLimpo, senha: senhaInput)
+            if !sucesso {
+                erroMensagem = "Senha incorreta para esta conta. Verifique ou crie uma nova conta."
+            }
         }
     }
     
     private func realizarEntradaRapida() {
+        erroMensagem = nil
         store.iniciarModoVisitanteProducao()
     }
 }
