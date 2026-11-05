@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>pt-BR</string>
     <key>CFBundleDisplayName</key>
-    <string>CRM MEI</string>
+    <string>Lavamos Mais</string>
     <key>CFBundleExecutable</key>
     <string>CRMMEI</string>
     <key>CFBundleIdentifier</key>
@@ -13,13 +13,13 @@
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>CRM MEI</string>
+    <string>Lavamos Mais</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleVersion</key>
-    <string>6</string>
+    <string>7</string>
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>LSRequiresIPhoneOS</key>
