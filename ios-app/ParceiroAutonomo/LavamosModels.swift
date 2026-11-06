@@ -30,6 +30,14 @@ enum TipoMaquina: String, Codable, CaseIterable {
         case .secadora: return "dryer.fill"
         }
     }
+    
+    /// Pulsos oficiais da Speed Queen conforme documentação técnica
+    var pulsosMoeda: Int {
+        switch self {
+        case .lavadora: return 4 // 4 pulsos de 60ms
+        case .secadora: return 6 // 6 pulsos de 60ms
+        }
+    }
 }
 
 enum StatusMaquina: String, Codable {
@@ -92,7 +100,7 @@ struct HistoricoLavagem: Identifiable, Codable, Hashable {
     }
 }
 
-// MARK: - Estado Global Persistente do Cliente Lavamos Mais
+// MARK: - Estado Global Persistente do Cliente Lavamos Mais & Integração ESP32
 @MainActor
 final class LavamosStore: ObservableObject {
     @Published var usuarioLogado: Bool = false {
@@ -107,6 +115,15 @@ final class LavamosStore: ObservableObject {
     @Published var saldoReais: Double = 36.0 {
         didSet { salvarEstado() }
     }
+    
+    // IP do Totem / Servidor Local ESP32
+    @Published var totemHost: String = "192.168.15.23" {
+        didSet { salvarEstado() }
+    }
+    @Published var totemPorta: String = "8080" {
+        didSet { salvarEstado() }
+    }
+    @Published var esp32Conectado: Bool = false
     
     // Máquinas da Loja
     @Published var maquinas: [MaquinaItem] = [] {
@@ -139,6 +156,7 @@ final class LavamosStore: ObservableObject {
     init() {
         carregarEstado()
         iniciarTimerGlobal()
+        verificarConexaoTotem()
     }
     
     func carregarEstado() {
@@ -148,13 +166,14 @@ final class LavamosStore: ObservableObject {
             self.nomeCliente = obj.nomeCliente
             self.telefoneCliente = obj.telefoneCliente
             self.saldoReais = obj.saldoReais
+            self.totemHost = obj.totemHost ?? "192.168.15.23"
+            self.totemPorta = obj.totemPorta ?? "8080"
             self.maquinas = obj.maquinas
             self.cicloAtivoMaquinaNumero = obj.cicloAtivoMaquinaNumero
             self.cicloAtivoTipo = obj.cicloAtivoTipo
             self.cicloAtivoSegundosRestantes = obj.cicloAtivoSegundosRestantes
             self.historico = obj.historico
         } else {
-            // Inicialização padrão com 6 máquinas (3 lavadoras + 3 secadoras)
             self.usuarioLogado = UserDefaults.standard.bool(forKey: "lavamos_logado")
             self.maquinas = [
                 MaquinaItem(numero: 1, tipo: .lavadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0),
@@ -173,6 +192,8 @@ final class LavamosStore: ObservableObject {
             nomeCliente: nomeCliente,
             telefoneCliente: telefoneCliente,
             saldoReais: saldoReais,
+            totemHost: totemHost,
+            totemPorta: totemPorta,
             maquinas: maquinas,
             cicloAtivoMaquinaNumero: cicloAtivoMaquinaNumero,
             cicloAtivoTipo: cicloAtivoTipo,
@@ -185,7 +206,6 @@ final class LavamosStore: ObservableObject {
         UserDefaults.standard.set(usuarioLogado, forKey: "lavamos_logado")
     }
     
-    // Iniciar sessão
     func entrarComTelefone(nome: String, telefone: String) {
         self.nomeCliente = nome.isEmpty ? "Cliente Lavamos Mais" : nome
         self.telefoneCliente = telefone
@@ -198,13 +218,31 @@ final class LavamosStore: ObservableObject {
         salvarEstado()
     }
     
-    // Adicionar saldo
     func adicionarSaldo(valor: Double) {
         self.saldoReais += valor
         salvarEstado()
     }
     
-    // Ativar máquina (Débito e início de ciclo de 35 min)
+    // Consulta status do Totem / ESP32 na rede
+    func verificarConexaoTotem() {
+        guard let url = URL(string: "http://\(totemHost):\(totemPorta)/api/status") else { return }
+        Task {
+            var req = URLRequest(url: url)
+            req.timeoutInterval = 2.0
+            do {
+                let (data, resp) = try await URLSession.shared.data(for: req)
+                if let httpResp = resp as? HTTPURLResponse, httpResp.statusCode == 200 {
+                    self.esp32Conectado = true
+                } else {
+                    self.esp32Conectado = false
+                }
+            } catch {
+                self.esp32Conectado = false
+            }
+        }
+    }
+    
+    // Ativação da Máquina Speed Queen disparando o pulso físico no ESP32
     func ativarMaquina(numero: Int) -> (sucesso: Bool, mensagem: String) {
         guard let idx = maquinas.firstIndex(where: { $0.numero == numero }) else {
             return (false, "Máquina número \(numero) não encontrada.")
@@ -219,7 +257,7 @@ final class LavamosStore: ObservableObject {
             return (false, "Saldo insuficiente. Você tem R$ \(Int(saldoReais)),00 e o ciclo custa R$ \(Int(m.precoCiclo)),00.")
         }
         
-        // Debita saldo
+        // Debita saldo do cliente
         saldoReais -= m.precoCiclo
         
         let duracaoMinutos = (m.tipo == .lavadora) ? 35 : 45
@@ -227,15 +265,17 @@ final class LavamosStore: ObservableObject {
         maquinas[idx].tempoRestanteMinutos = duracaoMinutos
         maquinas[idx].clienteAtual = nomeCliente
         
-        // Define ciclo ativo para acompanhamento
         cicloAtivoMaquinaNumero = numero
         cicloAtivoTipo = m.tipo
         cicloAtivoSegundosRestantes = duracaoMinutos * 60
         
-        // Adiciona ao histórico
+        // Disparo Físico de Moedas no ESP32 via Totem
+        let pulsos = m.tipo.pulsosMoeda
+        dispararPulsoFisicoESP32(quantidade: pulsos)
+        
         historico.insert(
             HistoricoLavagem(
-                descricao: "\(m.tipo.rawValue) #\(numero) iniciada",
+                descricao: "\(m.tipo.rawValue) #\(numero) iniciada (\(pulsos) pulsos)",
                 valor: m.precoCiclo,
                 tipo: m.tipo,
                 maquinaNumero: numero
@@ -244,7 +284,18 @@ final class LavamosStore: ObservableObject {
         )
         
         salvarEstado()
-        return (true, "Máquina \(numero) liberada com sucesso! O ciclo iniciou.")
+        return (true, "Máquina \(numero) liberada! \(pulsos) moedas disparadas no ESP32 da Speed Queen.")
+    }
+    
+    private func dispararPulsoFisicoESP32(quantidade: Int) {
+        guard let url = URL(string: "http://\(totemHost):\(totemPorta)/api/pulse?count=\(quantidade)") else { return }
+        Task {
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.timeoutInterval = 3.5
+            _ = try? await URLSession.shared.data(for: request)
+            self.verificarConexaoTotem()
+        }
     }
     
     private func iniciarTimerGlobal() {
@@ -255,7 +306,6 @@ final class LavamosStore: ObservableObject {
                 if self.cicloAtivoSegundosRestantes > 0 {
                     self.cicloAtivoSegundosRestantes -= 1
                     if self.cicloAtivoSegundosRestantes == 0 {
-                        // Ciclo finalizou!
                         if let num = self.cicloAtivoMaquinaNumero,
                            let idx = self.maquinas.firstIndex(where: { $0.numero == num }) {
                             self.maquinas[idx].status = .disponivel
@@ -275,6 +325,8 @@ struct LavamosStateCodable: Codable {
     var nomeCliente: String
     var telefoneCliente: String
     var saldoReais: Double
+    var totemHost: String?
+    var totemPorta: String?
     var maquinas: [MaquinaItem]
     var cicloAtivoMaquinaNumero: Int?
     var cicloAtivoTipo: TipoMaquina

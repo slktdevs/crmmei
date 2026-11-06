@@ -8,6 +8,9 @@ struct LavamosMainView: View {
     @State private var maquinaSelecionadaParaAtivar: MaquinaItem? = nil
     @State private var numeroDigitado: String = ""
     @State private var alertaResultado: (titulo: String, mensagem: String)? = nil
+    @State private var exibirModalConfigTotem: Bool = false
+    @State private var totemHostInput: String = ""
+    @State private var totemPortaInput: String = ""
     
     var body: some View {
         VStack(spacing: 0) {
@@ -34,6 +37,9 @@ struct LavamosMainView: View {
         .background(Color.lavamosFundo.ignoresSafeArea())
         .sheet(item: $maquinaSelecionadaParaAtivar) { maquina in
             modalConfirmarAtivacao(maquina)
+        }
+        .sheet(isPresented: $exibirModalConfigTotem) {
+            modalConfiguracaoTotem
         }
         .alert(alertaResultado?.titulo ?? "", isPresented: Binding(
             get: { alertaResultado != nil },
@@ -82,6 +88,25 @@ struct LavamosMainView: View {
             }
             .buttonStyle(.plain)
             
+            // Status Totem / Configuração de Conexão
+            Button {
+                totemHostInput = store.totemHost
+                totemPortaInput = store.totemPorta
+                exibirModalConfigTotem = true
+            } label: {
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(store.esp32Conectado ? Color.lavamosVerde : Color.lavamosLaranja)
+                        .frame(width: 8, height: 8)
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(store.esp32Conectado ? .lavamosVerde : .lavamosTextoSec)
+                }
+                .padding(8)
+                .background(Color.white)
+                .clipShape(Circle())
+            }
+
             // Sair
             Button {
                 store.encerrarSessao()
@@ -585,5 +610,98 @@ struct LavamosMainView: View {
         }
         .padding(24)
         .presentationDetents([.fraction(0.45)])
+    }
+    
+    // Modal de Configuração do Totem ESP32
+    private var modalConfiguracaoTotem: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "cpu.fill")
+                .font(.system(size: 44))
+                .foregroundColor(.lavamosAzul)
+            
+            Text("Conexão Totem Speed Queen")
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundColor(.lavamosTexto)
+            
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(store.esp32Conectado ? Color.lavamosVerde : Color.lavamosLaranja)
+                    .frame(width: 10, height: 10)
+                Text(store.esp32Conectado ? "ESP32 Conectado e Operacional" : "Totem ESP32 Offline / Aguardando")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundColor(store.esp32Conectado ? .lavamosVerde : .lavamosLaranja)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(store.esp32Conectado ? Color.lavamosVerdeClaro : Color.lavamosLaranjaClaro)
+            .cornerRadius(12)
+            
+            VStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("IP do Servidor Totem / ESP32")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(.lavamosTextoSec)
+                    TextField("Ex: 192.168.15.23", text: $totemHostInput)
+                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                        .keyboardType(.numbersAndPunctuation)
+                        .autocapitalization(.none)
+                        .padding(12)
+                        .background(Color.lavamosFundo)
+                        .cornerRadius(10)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Porta da API")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(.lavamosTextoSec)
+                    TextField("Ex: 8080", text: $totemPortaInput)
+                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                        .keyboardType(.numberPad)
+                        .padding(12)
+                        .background(Color.lavamosFundo)
+                        .cornerRadius(10)
+                }
+            }
+            .padding(.horizontal, 16)
+            
+            HStack(spacing: 12) {
+                Button {
+                    store.totemHost = totemHostInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                    store.totemPorta = totemPortaInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                    store.verificarConexaoTotem()
+                } label: {
+                    Text("Testar Conexão")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundColor(.lavamosAzul)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.lavamosAzulClaro)
+                        .cornerRadius(12)
+                }
+                .buttonStyle(.plain)
+                
+                Button {
+                    store.totemHost = totemHostInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                    store.totemPorta = totemPortaInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                    store.salvarEstado()
+                    store.verificarConexaoTotem()
+                    exibirModalConfigTotem = false
+                } label: {
+                    Text("Salvar")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.lavamosAzul)
+                        .cornerRadius(12)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 16)
+            
+            Spacer()
+        }
+        .padding(20)
+        .presentationDetents([.fraction(0.55)])
     }
 }
