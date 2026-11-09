@@ -1,23 +1,27 @@
 import SwiftUI
 import Foundation
 
-// MARK: - Design System Lavamos Mais (Tons de Ciano / Oceano / Água Limpa)
+// MARK: - Design System Clean & Minimalista (Lavamos Mais)
 extension Color {
-    static let lavamosFundo = Color(red: 240/255, green: 249/255, blue: 255/255) // #F0F9FF
+    static let lavamosFundo = Color(red: 244/255, green: 245/255, blue: 247/255) // #F4F5F7
     static let lavamosCard = Color.white
-    static let lavamosTexto = Color(red: 15/255, green: 23/255, blue: 42/255)
-    static let lavamosTextoSec = Color(red: 71/255, green: 85/255, blue: 105/255)
+    static let lavamosBorda = Color(red: 229/255, green: 231/255, blue: 235/255) // #E5E7EB
+    static let lavamosTexto = Color(red: 17/255, green: 24/255, blue: 39/255)    // #111827
+    static let lavamosTextoSec = Color(red: 107/255, green: 114/255, blue: 128/255) // #6B7280
     
-    // Azul Ciano Lavanderia
-    static let lavamosAzul = Color(red: 14/255, green: 165/255, blue: 233/255) // #0EA5E9
-    static let lavamosAzulEscuro = Color(red: 2/255, green: 132/255, blue: 199/255) // #0284C7
-    static let lavamosAzulClaro = Color(red: 224/255, green: 242/255, blue: 254/255)
+    // Cores Primárias Sólidas (Sem degradês artificiais)
+    static let lavamosAzul = Color(red: 0/255, green: 102/255, blue: 255/255)    // #0066FF
+    static let lavamosAzulEscuro = Color(red: 0/255, green: 82/255, blue: 204/255)
+    static let lavamosAzulClaro = Color(red: 239/255, green: 246/255, blue: 255/255)
     
-    // Status Máquinas
-    static let lavamosVerde = Color(red: 16/255, green: 185/255, blue: 129/255) // Disponível
-    static let lavamosVerdeClaro = Color(red: 209/255, green: 250/255, blue: 229/255)
-    static let lavamosLaranja = Color(red: 245/255, green: 158/255, blue: 11/255) // Em uso
-    static let lavamosLaranjaClaro = Color(red: 254/255, green: 243/255, blue: 199/255)
+    static let lavamosSecadora = Color(red: 234/255, green: 88/255, blue: 12/255) // #EA580C
+    static let lavamosSecadoraClaro = Color(red: 255/255, green: 247/255, blue: 237/255)
+    
+    // Status
+    static let lavamosVerde = Color(red: 16/255, green: 185/255, blue: 129/255)  // #10B981
+    static let lavamosVerdeClaro = Color(red: 236/255, green: 253/255, blue: 245/255)
+    static let lavamosLaranja = Color(red: 245/255, green: 158/255, blue: 11/255) // #F59E0B
+    static let lavamosLaranjaClaro = Color(red: 255/255, green: 251/255, blue: 235/255)
 }
 
 enum TipoMaquina: String, Codable, CaseIterable {
@@ -31,18 +35,25 @@ enum TipoMaquina: String, Codable, CaseIterable {
         }
     }
     
-    /// Pulsos oficiais da Speed Queen conforme documentação técnica
+    var duracaoPadrao: Int {
+        switch self {
+        case .lavadora: return 35
+        case .secadora: return 45
+        }
+    }
+    
+    /// Pulsos oficiais da Speed Queen (60ms LOW / 100ms HIGH)
     var pulsosMoeda: Int {
         switch self {
-        case .lavadora: return 4 // 4 pulsos de 60ms
-        case .secadora: return 6 // 6 pulsos de 60ms
+        case .lavadora: return 4
+        case .secadora: return 6
         }
     }
 }
 
 enum StatusMaquina: String, Codable {
-    case disponivel = "Disponível"
-    case emUso = "Em Ciclo"
+    case disponivel = "Livre"
+    case emUso = "Ocupada"
     case manutencao = "Manutenção"
     
     var cor: Color {
@@ -100,13 +111,12 @@ struct HistoricoLavagem: Identifiable, Codable, Hashable {
     }
 }
 
-// MARK: - Estado Global Persistente do Cliente Lavamos Mais & Integração ESP32
 @MainActor
 final class LavamosStore: ObservableObject {
     @Published var usuarioLogado: Bool = false {
         didSet { salvarEstado() }
     }
-    @Published var nomeCliente: String = "Cliente Lavamos Mais" {
+    @Published var nomeCliente: String = "Cliente" {
         didSet { salvarEstado() }
     }
     @Published var telefoneCliente: String = "" {
@@ -116,7 +126,6 @@ final class LavamosStore: ObservableObject {
         didSet { salvarEstado() }
     }
     
-    // IP do Totem / Servidor Local ESP32
     @Published var totemHost: String = "192.168.15.23" {
         didSet { salvarEstado() }
     }
@@ -125,12 +134,10 @@ final class LavamosStore: ObservableObject {
     }
     @Published var esp32Conectado: Bool = false
     
-    // Máquinas da Loja
     @Published var maquinas: [MaquinaItem] = [] {
         didSet { salvarEstado() }
     }
     
-    // Ciclo Ativo do Cliente (Timer)
     @Published var cicloAtivoMaquinaNumero: Int? = nil {
         didSet { salvarEstado() }
     }
@@ -150,7 +157,7 @@ final class LavamosStore: ObservableObject {
     private var urlArquivo: URL {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
-        return docs.appendingPathComponent("lavamos_mais_state_v1.json")
+        return docs.appendingPathComponent("lavamos_mais_state_v2.json")
     }
     
     init() {
@@ -178,10 +185,8 @@ final class LavamosStore: ObservableObject {
             self.maquinas = [
                 MaquinaItem(numero: 1, tipo: .lavadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0),
                 MaquinaItem(numero: 2, tipo: .lavadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0),
-                MaquinaItem(numero: 3, tipo: .lavadora, status: .emUso, tempoRestanteMinutos: 14, precoCiclo: 18.0),
-                MaquinaItem(numero: 4, tipo: .secadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0),
-                MaquinaItem(numero: 5, tipo: .secadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0),
-                MaquinaItem(numero: 6, tipo: .secadora, status: .emUso, tempoRestanteMinutos: 22, precoCiclo: 18.0)
+                MaquinaItem(numero: 3, tipo: .secadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0),
+                MaquinaItem(numero: 4, tipo: .secadora, status: .disponivel, tempoRestanteMinutos: 0, precoCiclo: 18.0)
             ]
         }
     }
@@ -207,7 +212,7 @@ final class LavamosStore: ObservableObject {
     }
     
     func entrarComTelefone(nome: String, telefone: String) {
-        self.nomeCliente = nome.isEmpty ? "Cliente Lavamos Mais" : nome
+        self.nomeCliente = nome.isEmpty ? "Cliente" : nome
         self.telefoneCliente = telefone
         self.usuarioLogado = true
         salvarEstado()
@@ -223,14 +228,13 @@ final class LavamosStore: ObservableObject {
         salvarEstado()
     }
     
-    // Consulta status do Totem / ESP32 na rede
     func verificarConexaoTotem() {
         guard let url = URL(string: "http://\(totemHost):\(totemPorta)/api/status") else { return }
         Task {
             var req = URLRequest(url: url)
             req.timeoutInterval = 2.0
             do {
-                let (data, resp) = try await URLSession.shared.data(for: req)
+                let (_, resp) = try await URLSession.shared.data(for: req)
                 if let httpResp = resp as? HTTPURLResponse, httpResp.statusCode == 200 {
                     self.esp32Conectado = true
                 } else {
@@ -242,25 +246,23 @@ final class LavamosStore: ObservableObject {
         }
     }
     
-    // Ativação da Máquina Speed Queen disparando o pulso físico no ESP32
     func ativarMaquina(numero: Int) -> (sucesso: Bool, mensagem: String) {
         guard let idx = maquinas.firstIndex(where: { $0.numero == numero }) else {
-            return (false, "Máquina número \(numero) não encontrada.")
+            return (false, "Máquina #0\(numero) não encontrada.")
         }
         
         let m = maquinas[idx]
         if m.status == .emUso {
-            return (false, "Máquina \(numero) já está em ciclo! Tempo restante: \(m.tempoRestanteMinutos) min.")
+            return (false, "A \(m.tipo.rawValue) #0\(numero) já está em uso.")
         }
         
         if saldoReais < m.precoCiclo {
-            return (false, "Saldo insuficiente. Você tem R$ \(Int(saldoReais)),00 e o ciclo custa R$ \(Int(m.precoCiclo)),00.")
+            return (false, "Saldo insuficiente. Adicione créditos para iniciar.")
         }
         
-        // Debita saldo do cliente
         saldoReais -= m.precoCiclo
         
-        let duracaoMinutos = (m.tipo == .lavadora) ? 35 : 45
+        let duracaoMinutos = m.tipo.duracaoPadrao
         maquinas[idx].status = .emUso
         maquinas[idx].tempoRestanteMinutos = duracaoMinutos
         maquinas[idx].clienteAtual = nomeCliente
@@ -269,13 +271,12 @@ final class LavamosStore: ObservableObject {
         cicloAtivoTipo = m.tipo
         cicloAtivoSegundosRestantes = duracaoMinutos * 60
         
-        // Disparo Físico de Moedas no ESP32 via Totem
         let pulsos = m.tipo.pulsosMoeda
         dispararPulsoFisicoESP32(quantidade: pulsos)
         
         historico.insert(
             HistoricoLavagem(
-                descricao: "\(m.tipo.rawValue) #\(numero) iniciada (\(pulsos) pulsos)",
+                descricao: "\(m.tipo.rawValue) #0\(numero)",
                 valor: m.precoCiclo,
                 tipo: m.tipo,
                 maquinaNumero: numero
@@ -284,7 +285,7 @@ final class LavamosStore: ObservableObject {
         )
         
         salvarEstado()
-        return (true, "Máquina \(numero) liberada! \(pulsos) moedas disparadas no ESP32 da Speed Queen.")
+        return (true, "\(m.tipo.rawValue) #0\(numero) liberada! Pressione START na máquina.")
     }
     
     private func dispararPulsoFisicoESP32(quantidade: Int) {
